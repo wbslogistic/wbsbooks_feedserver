@@ -1,0 +1,2 @@
+class OzonUploader
+end
