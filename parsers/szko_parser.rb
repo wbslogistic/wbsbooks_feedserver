@@ -9,13 +9,15 @@ class SzkoParser
      szko_xls = @@config["szko_xls"]
 
 
-    #  p "Getting zip from:#{url}"
-    # open('zip_path', 'wb') do |file|
-    #   file << open(url).read
-    # end
-    #
-    #  p ' Unziping #{zip_path}'
-    # unzip_file(zip_path,szko_path)
+    p "Getting zip from:#{url}"
+    open('zip_path', 'wb') do |file|
+      file << open(url).read
+
+
+    end
+
+    p ' Unziping #{zip_path}'
+    unzip_file(zip_path,szko_path)
 
      p ' Unzip done!'
 
@@ -26,12 +28,26 @@ class SzkoParser
 
 
   def  get_products_from_xls(path)
-
+  products = []
   book = Spreadsheet.open path
   sheet1 = book.worksheet 0
     sheet1.each do |row|
-       p row.to_s
+
+      p= Product.new
+      p.name =  row[1].to_s
+      p.author = row[2].to_s
+      p.price = row[4]
+      p.isbn =  row[10]
+      p.barcode= row[10]
+      p.editor = row [13]
+      p.format = row [16]
+      p.cover = row [16]
+      p.page_count =  row [17]
+      products << p
     end
+
+    p 'all products extracted from Szko'
+
 
   end
 
