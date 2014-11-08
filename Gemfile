@@ -16,4 +16,6 @@ gem "require_all"
 
 gem "spreadsheet"
 
+gem 'nokogiri'
+
 
