@@ -1,0 +1,14 @@
+szko: "http://web.szko.ru/prices/priceext.zip"
+szko_zip: "./temp/szko/products.zip"
+szko_path: "./temp/szko/"
+szko_xls: "./temp/szko/priceext.xls"
+
+piter_ftp: "ftp://bbclogistics:gfhjkmbbc@ftp.piter.com"
+
+azbuka_ftp: "'178.21.239.3'"
+azbuka_xml: './temp/azbuka/PraysAzbuka-Atticus.xml'
+
+
+
+
+
