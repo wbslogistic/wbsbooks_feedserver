@@ -15,10 +15,21 @@ require 'zip/zip'
 #require "simple-spreadsheet"
 
 require 'spreadsheet' # best for large xls
+require 'nokogiri'
+
+
 
 
 require_all 'parsers'
 require_all 'models'
+
+require 'net/ftp'
+#require 'ox'
+
+
+require "xml"
+
+
 
 
 
@@ -32,7 +43,7 @@ p 'start'
 
 
 def start
-  parser1=  SzkoParser.new
+  parser1=  AzbukaParser.new
   parser1.parse
 
   pasers = [AzbukaParser.new,

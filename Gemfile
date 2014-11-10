@@ -10,12 +10,14 @@ gem 'psych' # will load compatibility for old rubyzip API.
 
 gem "require_all"
 #gem "creek"
-
-
 #gem "roo"
 
 gem "spreadsheet"
 
 gem 'nokogiri'
 
+gem "libxml-ruby" #IMPORTANT to install: sudo apt-get install libxml2-dev
+
+
+#gem "ox"
 
