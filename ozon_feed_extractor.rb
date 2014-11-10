@@ -19,22 +19,18 @@ require 'nokogiri'
 
 
 
-
-require_all 'parsers'
+require_all "parsers"
 require_all 'models'
+require_all 'helpers'
+
 
 require 'net/ftp'
 #require 'ox'
 
 
+require 'httparty'
+
 require "xml"
-
-
-
-
-
-
-
 
 
 p 'start'
@@ -43,17 +39,21 @@ p 'start'
 
 
 def start
-  parser1=  AzbukaParser.new
-  parser1.parse
+  par=  ExmoParser.new
 
-  pasers = [AzbukaParser.new,
+  par.parse
+
+
+
+  parsers = [AzbukaParser.new,
             ExmoParser.new,
             PiterParser.new,
             SzkoParser.new,
              ]
 
- parser.each do |parser|
-   parser.parse
+  parsers.each do |parser|
+ #  parser.parse
+    p parser.to_s
  end
 end
 

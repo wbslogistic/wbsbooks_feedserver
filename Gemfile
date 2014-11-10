@@ -21,3 +21,4 @@ gem "libxml-ruby" #IMPORTANT to install: sudo apt-get install libxml2-dev
 
 #gem "ox"
 
+gem "httparty"
