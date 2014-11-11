@@ -26,3 +26,10 @@ gem "httparty"
 
 gem "rmagick"
 
+
+gem "activerecord"
+
+
+
+gem 'active_record_migrations'
+
