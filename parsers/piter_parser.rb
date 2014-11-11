@@ -1,12 +1,8 @@
 class PiterParser
 
   def parse
+  #  get_files_from_ftp
     get_products
-  end
-
-
-  def get_node
-        @product.send(@binding[@reader.name.to_sym] + "=", @reader.node.content)
   end
 
 
@@ -15,6 +11,7 @@ class PiterParser
   def get_products
     @binding=
    {
+   Price: "price",
    Title: "name",
 	 Author: "author",
    Description:"description",
@@ -29,38 +26,50 @@ class PiterParser
    Pages: "page_count",
    Picture: "image",
 	 InitialPrintRun:"print_run",
-   StockLevel:"stock_level"
+   StockLevel:"stock_level",
+   Height: "height"
    }
 
     products = []
     Dir[ @@config['piter_xml_dir'] + "*.xml"].each do |file|
-     products +=  extract_products(file)
+     products +=  extract_products_f_xml(file)
     end
 
   end
 
 
-  def extract_products path
+  def extract_products_f_xml path
     products_table = []
 
    @product = Product.new
 
-      @reader = XML::Reader.file(path)
+      @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
+
+  begin
     while(@reader.read)
       next if  @reader.node_type==15
 
      if (@reader.name=="Product")
-       products_table << @product if @product
+       if @product
+         @product.year = @product.year[0..3] if @product.year and @product.year.length >= 4
+         products_table << @product
+       end
        @product=Product.new
        next
      end
        get_node if @binding[@reader.name.to_sym]
     end
+  rescue Exception => ex
+   p "Exception file =#{path} " +   ex.to_s
+  end
+    @reader
 
+
+    products_table
   end
 
 
-  def getFileFtp
+  def get_files_from_ftp
 
     p "open ftp connection to piter "
     ftp = Net::FTP.new(@@config["piter_ftp"])
@@ -73,8 +82,12 @@ class PiterParser
       p "downloading file from piter  "
 
       files.each do |f|
+        begin
         ftp.getbinaryfile("Piter" + f.split("Piter")[1], @@config['piter_xml_dir'] + "Piter" + f.split("Piter")[1], 1024)
-        #ftp.getbinaryfile('PraysAzbuka-Atticus.xml', @@config['azbuka_xml'], 1024)
+        rescue Exception => ex
+          p "Piter exception" + ex.to_s
+        end
+
       end
     rescue Exception => ex
       p ex
@@ -84,6 +97,10 @@ class PiterParser
     end
   end
 
+
+  def get_node
+    @product.send(@binding[@reader.name.to_sym] + "=", @reader.node.content)
+  end
 
 
 end
