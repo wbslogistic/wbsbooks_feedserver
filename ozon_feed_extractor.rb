@@ -1,6 +1,6 @@
 
 
-
+require 'RMagick'
 
 require 'rubygems'
 require 'require_all'
@@ -24,6 +24,7 @@ require_all 'models'
 require_all 'helpers'
 
 
+
 require 'net/ftp'
 #require 'ox'
 
@@ -32,6 +33,13 @@ require 'httparty'
 
 require "xml"
 
+require "./database_connector"
+
+
+
+
+
+
 
 p 'start'
 
@@ -39,7 +47,9 @@ p 'start'
 
 
 def start
-  par=  ExmoParser.new
+
+  par =  PiterParser.new
+
 
   par.parse
 
@@ -56,6 +66,8 @@ def start
     p parser.to_s
  end
 end
+
+DatabaseConnector.connect_to_database
 
 
 start
