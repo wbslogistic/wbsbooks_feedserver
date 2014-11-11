@@ -1,3 +1,4 @@
+
 class PiterParser
 
   def parse
@@ -48,11 +49,13 @@ class PiterParser
 
   begin
     while(@reader.read)
-      next if  @reader.node_type==15
+      next if  @reader.node_type==15 or @reader.node_type=="#text"
+
 
      if (@reader.name=="Product")
        if @product
-         @product.year = @product.year[0..3] if @product.year and @product.year.length >= 4
+         @product.year = @product.year.to_s[0..3] if @product.year and @product.year.to_s.length >= 4
+         @product.rise_price
          products_table << @product
        end
        @product=Product.new
@@ -88,7 +91,6 @@ class PiterParser
         rescue Exception => ex
           p "Piter exception" + ex.to_s
         end
-
       end
     rescue Exception => ex
       p ex
@@ -100,7 +102,10 @@ class PiterParser
 
 
   def get_node
-    @product.send(@binding[@reader.name.to_sym] + "=", @reader.node.content)
+    @product.send(@binding[@reader.name.to_sym] + "=", @reader.node.content) if !@product.send(@binding[@reader.name.to_sym]) and @reader.node.content and @reader.node.content!=""
+    b = @binding[@reader.name.to_sym] + "=" +  @reader.node.content.to_s
+    a =33
+
   end
 
 

@@ -41,7 +41,9 @@ class ExmoParser
           product.weight =book['brgew'][content_txt]
           product.cover = book['cover'][content_txt]
           product.editor = book['publi'][content_txt]
-          product.price = book['price'][content_txt] #todo: increase
+          product.price = book['price'][content_txt]
+          product.rise_price
+
           product.page_count = book['qtypg'][content_txt]
           product.format = book['formt']['name']
           product.year = book['ldate_d'][content_txt]

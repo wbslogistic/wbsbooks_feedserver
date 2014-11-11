@@ -19,9 +19,10 @@ class SzkoParser
 
      puts ' Unzip done!'
 
-     puts ' ---- Szco finished ! ----'
 
      get_products_from_xls(szko_xls)
+
+     puts ' ---- Szco finished ! ----'
   end
 
 
@@ -36,13 +37,15 @@ class SzkoParser
       product.name =  row[1].to_s
       product.author = row[2].to_s
       product.price = row[4]
+      product.rise_price
+
       product.isbn =  row[10]
       product.barcode= row[10]
-      product.editor = row [13]
-      product.format = row [15]
-      product.cover = row [16]
-      product.page_count =  row [17]
-      product.description =  row [18]
+      product.editor = row[13]
+      product.format = row[15]
+      product.cover = row[16]
+      product.page_count =  row[17]
+      product.description =  row[18]
       products << product
     end
 

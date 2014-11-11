@@ -85,6 +85,7 @@ class AzbukaParser
             begin
                 next if @reader.node.content.to_s.strip !="01"
                 @product.price =  @reader.expand.next.next.content if @reader.expand.next.next
+                @product.rise_price
                 next
             rescue Exception => ex
               puts "strange book without price"
@@ -136,10 +137,10 @@ class AzbukaParser
        end
 
   end
-
-  def get_next_node
-    @product.price =  @reader.node.next.next.content
-  end
+  #
+  # def get_next_node
+  #   @product.price =  @reader.node.next.next.content
+  # end
 
   #square = Proc.new do |n|
 #    n ** 2
