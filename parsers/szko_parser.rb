@@ -2,27 +2,26 @@
 class SzkoParser
 
   def parse
-     p 'start_parsing'
+     puts ' ----- Start_parsing Szco ! -------'
      url=  @@config["szko"]
      zip_path=  @@config["szko_zip"]
      szko_path = @@config["szko_path"]
      szko_xls = @@config["szko_xls"]
 
 
-    p "Getting zip from:#{url}"
-    open('zip_path', 'wb') do |file|
+     puts "Getting zip from:#{url}"
+    open(zip_path, 'wb') do |file|
       file << open(url).read
-
-
     end
 
-    p ' Unziping #{zip_path}'
+     puts ' Unziping #{zip_path}'
     unzip_file(zip_path,szko_path)
 
-     p ' Unzip done!'
+     puts ' Unzip done!'
+
+     puts ' ---- Szco finished ! ----'
 
      get_products_from_xls(szko_xls)
-
   end
 
 
@@ -33,23 +32,38 @@ class SzkoParser
   sheet1 = book.worksheet 0
     sheet1.each do |row|
 
-      p= Product.new
-      p.name =  row[1].to_s
-      p.author = row[2].to_s
-      p.price = row[4]
-      p.isbn =  row[10]
-      p.barcode= row[10]
-      p.editor = row [13]
-      p.format = row [16]
-      p.cover = row [16]
-      p.page_count =  row [17]
-      products << p
+      product= Product.new
+      product.name =  row[1].to_s
+      product.author = row[2].to_s
+      product.price = row[4]
+      product.isbn =  row[10]
+      product.barcode= row[10]
+      product.editor = row [13]
+      product.format = row [15]
+      product.cover = row [16]
+      product.page_count =  row [17]
+      product.description =  row [18]
+      products << product
     end
 
-    p 'all products extracted from Szko'
+    puts ' ----- all products extracted from Szko ----'
 
+  products
 
   end
+
+
+
+  def unzip_file (file, destination)
+    Zip::ZipFile.open(file) do |zip_file|
+      zip_file.each do |f|
+        f_path=File.join(destination, f.name)
+        FileUtils.mkdir_p(File.dirname(f_path))
+        zip_file.extract(f, f_path) unless File.exist?(f_path)
+      end
+    end
+  end
+
 
 
 
@@ -99,14 +113,5 @@ class SzkoParser
   #
   # end
 
-  # def unzip_file (file, destination)
-  #   Zip::ZipFile.open(file) do |zip_file|
-  #     zip_file.each do |f|
-  #       f_path=File.join(destination, f.name)
-  #       FileUtils.mkdir_p(File.dirname(f_path))
-  #       zip_file.extract(f, f_path) unless File.exist?(f_path)
-  #     end
-  #   end
-  # end
 
   end

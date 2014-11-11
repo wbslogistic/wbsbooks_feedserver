@@ -3,7 +3,7 @@
 class AzbukaParser
 
   def parse
-
+    puts "----- Start_parsing Azbuka ! -------"
     #getFileFtp todo: uncomment
     parse_with_libxml(@@config["azbuka_xml"])
 

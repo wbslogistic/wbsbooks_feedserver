@@ -1,6 +1,7 @@
 class PiterParser
 
   def parse
+    puts "----- Start_parsing Piter ! -------"
   #  get_files_from_ftp
     get_products
   end

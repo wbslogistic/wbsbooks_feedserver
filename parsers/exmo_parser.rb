@@ -1,6 +1,7 @@
 class ExmoParser
 
   def parse
+    puts "----- Start_parsing Exmo ! -------"
     get_products
   end
 
