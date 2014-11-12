@@ -21,8 +21,13 @@ require "./database_connector"
 
 class OzonUploader#only for style
 
+
   def self.start
 
+
+ # OProduct.destroy_all
+ # puts "products destroyed"
+ # a = 33 + "asdfadsf"
 
     if (File.exist? @@config["ozon_big_xml"])
       File.delete @@config["ozon_big_xml"]
@@ -67,8 +72,13 @@ end
 
 
 
-#OzonUploader.start
+OzonUploader.start
+
+puts "file downloaded !"
+puts "start parsing big xml !"
 
 parser =  OzonParser.new
 parser.parse
+
+puts " process finished!!! "
 
