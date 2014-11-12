@@ -20,7 +20,34 @@ class Product  < ActiveRecord::Base
 
 
 
+  def self.write_product_list list,reader = nil, site_id =nil , delete=true
 
+    #deleting the existing ones
+     Product.where(isbn: list.map{|p| p.isbn }.compact ,site_id: site_id.to_s ).delete_all if delete
+
+    begin
+      #transaction
+      Product.transaction do
+        list.each do |pr|
+          pr.save(:validate => false)
+        end
+        list.clear
+      end
+
+    rescue Exception => ex
+      Helper.log_and " Exception on saving product : " + ex.message + " trace = " + ex.backtrace.to_s
+      list.each do |pr2|
+        begin
+          pr2.save(:validate => false)
+        rescue Exception => ex2
+          Helper.log_and " Exception on saving product: " + ex2.message + " trace = " + ex2.backtrace.to_s
+          reader.read if reader
+        end
+      end
+    end
+
+    list.clear
+    end
 
 
 
