@@ -3,27 +3,40 @@
 class AzbukaParser
 
   def parse
-    puts "----- Start_parsing Azbuka ! -------"
-    #getFileFtp todo: uncomment
+    puts "----- Start_Azbuka parser ! -------"
+    getFileFtp
     parse_with_libxml(@@config["azbuka_xml"])
 
   end
 
   def getFileFtp
 
-    p "open ftp connection to azbuka ftp "
-    ftp = Net::FTP.new(@@config["azbuka_ftp"])
-    begin
-    ftp.passive=true
-    ftp.login @@config["azbuka_user"], @@config["azbuka_password"]
-    files = ftp.chdir('Prays MMP')
-    p "downloading file from azbuka.ftp "
-    ftp.getbinaryfile('PraysAzbuka-Atticus.xml', @@config['azbuka_xml'], 1024)
-    ftp.close
-    rescue Exception => ex
-    ftp.close
+   n_times(" Getting files from azbuka ftp ") do
+      ftp = Net::FTP.new
+      ftp.connect("178.21.239.3", 21)
+      ftp.login(@@config["azbuka_user"], @@config["azbuka_password"])
+
+
+
+      time_file = ftp.mtime("/Prays MMP/PraysAzbuka-Atticus.xml").to_s
+      time_file="azbuka_" + time_file
+
+      files =   ParsedFile.where(site_id: 1,file_name: time_file.to_s).count()
+      if files==0
+        Helper.delete_if_exists  @@config['azbuka_xml']
+       ftp.getbinaryfile("/Prays MMP/PraysAzbuka-Atticus.xml",@@config['azbuka_xml'], 1024)
+
+
+        parsed=  ParsedFile.new
+        parsed.site_id= 1
+        parsed.file_name= time_file
+        parsed.save
+
+       ftp.close
+     end
     end
   end
+
 
 
 
@@ -33,9 +46,15 @@ class AzbukaParser
     @product =Product.new
     @product.author=""
     @product.currency= "RUB"
+    @product.site_id="new_1"
+
   end
 
   def parse_with_libxml path
+
+    if File.exist? path
+
+
     @reader = XML::Reader.file(path)
 
     array_of_products= []
@@ -57,6 +76,7 @@ class AzbukaParser
 
    create_azbuka_product
      line=0
+     count = 0
     while (@reader.read)
       line+=1
         next if  @reader.node_type==15
@@ -108,11 +128,19 @@ class AzbukaParser
             next
         end
 
-
-
+         if array_of_products.count()==500
+           count+=500
+           Product.write_product_list array_of_products,@reader,1
+           Helper.log_and "imported = " + count
+         end
         end
 
-    array_of_products
+    Product.write_product_list array_of_products,@reader,1    if array_of_products.count()>0
+
+    else
+      Helper.log_and " File not present #{path}"
+    end
+
   end
 
 
@@ -137,39 +165,7 @@ class AzbukaParser
        end
 
   end
-  #
-  # def get_next_node
-  #   @product.price =  @reader.node.next.next.content
-  # end
 
-  #square = Proc.new do |n|
-#    n ** 2
- # end
-
-
-
-
-  #resulted in strange results -
-  def parse_with_ox path
-
-
-
-  xml1=    Ox.parse path
-  xml = Ox.parse(path)
-
-  #xml.locate('Element/foo/^Text').each do |t|
-   # @data = Model.new(:attr => t)
-    #@data.save
-  #end
-
-# or if you need to do other stuff with the element first
-  xml.locate('Product').each do |elem|
-    # do stuff
-    @data = Model.new(:attr => elem.locate('foo/^Text').first)
-    @data.save
-  end
-
-  end
 
 
 
@@ -205,6 +201,38 @@ class AzbukaParser
   #     @el = e
   #   end
   #    p " File #{path} parsed !!!"
+  # end
+
+
+  #resulted in strange results -
+  def parse_with_ox path
+
+    #
+    #
+    # xml1=    Ox.parse path
+    # xml = Ox.parse(path)
+
+    #xml.locate('Element/foo/^Text').each do |t|
+    # @data = Model.new(:attr => t)
+    #@data.save
+    #end
+
+    # or if you need to do other stuff with the element first
+    #   xml.locate('Product').each do |elem|
+    #     # do stuff
+    #     @data = Model.new(:attr => elem.locate('foo/^Text').first)
+    #     @data.save
+    #   end
+
+  end
+
+  #
+  # def get_next_node
+  #   @product.price =  @reader.node.next.next.content
+  # end
+
+  #square = Proc.new do |n|
+  #    n ** 2
   # end
 
 

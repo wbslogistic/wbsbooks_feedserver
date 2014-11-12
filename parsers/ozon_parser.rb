@@ -22,11 +22,16 @@
 # <description>Ñáîðíèê ñîñòîèò èç ðàññêàçîâ è ïîâåñòåé ïðèçíàííûõ ìàñòåðîâ áðèòàíñêîé ëèòåðàòóðû - ×.Äèêêåíñà, Ð.Ë.Ñòèâåíñîíà, Ò.Ãàðäè, Ä.Ã.Ëîóðåíñà. Íåàäàïòèðîâàííûå òåêñòû ïðîèçâåäåíèé äàäóò ÷èòàòåëÿì âîçìîæíîñòü ïî äîñòîèíñòâó îöåíèòü âåëèêîëåïíûé ÿçûê êëàññèêîâ, à ïðåêðàñíûå ïåðåâîäû íà ðóññêèé ïîìîãóò ðàçðåøèòü âîçíèêàþùèå âîïðîñû è òðóäíîñòè. ×èòàÿ è ñëóøàÿ ðàññêàçû íà àíãëèéñêîì ÿçûêå, îáðàùàÿñü ê ïðåêðàñíîìó ïåðåâîäó, âû óëó÷øèòå ñâîè íàâûêè ÷òåíèÿ è âîñïðèÿòèÿ íà ñëóõ èíîÿçû÷íîé ðå÷è. Äëÿ óãëóáëåíèÿ çíàíèé àíãëèéñêîãî è îáëåã÷åíèÿ ïîíèìàíèÿ òåêñòà ïðåäëàãàþòñÿ óïðàæíåíèÿ è ñëîâàðü. Êíèãà áóäåò èíòåðåñíà è ïîëåçíà øêîëüíèêàì, àáèòóðèåíòàì, ñòóäåíòàì, ïðåïîäàâàòåëÿì, à òàêæå âñåì, êòî èçó÷àåò àíãëèéñêèé ÿçûê ñàìîñòîÿòåëüíî èëè ñ ïðåïîäàâàòåëåì. Äëÿ ëèö ñòàðøå 12 ëåò.</description>
 # <barcode>9785699696253</barcode>
 #       </offer>
+# good hash code = Zlib.crc32
 
 class OzonParser
 
   def parse
-    read_ozon_parser(@@config["ozon_big_xml"])
+    if (File.exist? @@config["ozon_big_xml"] )
+       read_ozon_parser(@@config["ozon_big_xml"])
+    else
+      Helper.log_and " Exception file not found #{@@config["ozon_big_xml"]}"
+    end
   end
 
 
@@ -48,38 +53,54 @@ class OzonParser
             ISBN:"isbn",
             year: "year"
         }
+
+     products_count= 0
     products_table = []
 
-    @product = Product.new
+    t1 = DateTime.now
+
+    OProduct.delete_all
+    @product = OProduct.new
 
     @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
 
-    begin
+
       while(@reader.read)
+        begin
         next if  @reader.node_type==15 or @reader.name =="#text"
 
         if (@reader.name=="offer")
-          #products_table << @product if @product
-          @product=Product.new
+          products_table << @product if @product
+          @product=OProduct.new
 
           next
         end
         get_node if @binding[@reader.name.to_sym]
+
+        if products_table.count() == 1000
+          Product.write_product_list products_table,@reader,0,false
+            products_count+=1000
+            Helper.log_and " imported #{products_count} of books "
+        end
+        rescue Exception => ex
+          @reader.read
+          Helper.log_and " Exception on parsing ozon xml " + ex.message.to_s
+        end
+
       end
-    rescue Exception => ex
-      p "Exception file =#{path} " +   ex.to_s
-    end
-    @reader
+      t2 = DateTime.now
+      Helper.log_and " Upload database import done! min: #{ ((t2.hour-t1.hour)*60 + t2.min-t1.min)  }"
+
+    Product.write_product_list products_table,@reader,0,false if products_table.count()>0
 
 
-    products_table
+
   end
 
 
   def get_node
     @product.send(@binding[@reader.name.to_sym] + "=", @reader.node.content) if !@product.send(@binding[@reader.name.to_sym])
   end
-
 
 
 end
