@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141112102217) do
+ActiveRecord::Schema.define(version: 20141112192626) do
 
   create_table "o_products", force: true do |t|
     t.string  "name"
@@ -66,10 +66,11 @@ ActiveRecord::Schema.define(version: 20141112102217) do
     t.string  "thickness"
     t.string  "format"
     t.string  "cover"
-    t.integer "site_id"
+    t.string  "site_id"
     t.string  "height"
     t.string  "stock_level"
     t.integer "category_id"
+    t.string  "image_path"
   end
 
 end
