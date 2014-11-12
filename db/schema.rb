@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141112192626) do
+ActiveRecord::Schema.define(version: 20141112211603) do
 
   create_table "o_products", force: true do |t|
     t.string  "name"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 20141112192626) do
     t.string  "height"
     t.string  "stock_level"
     t.integer "category_id"
+    t.string  "image_path"
   end
 
   create_table "parsed_files", force: true do |t|

@@ -20,7 +20,7 @@ class Product  < ActiveRecord::Base
 
 
 
-  def self.write_product_list list,reader = nil, site_id =nil , delete=true
+  def self.write_product_list list,reader = nil, site_id =nil , delete=true,write_images=true
 
 
     #deleting the existing ones
@@ -34,7 +34,7 @@ class Product  < ActiveRecord::Base
         end
       end
 
-      ImageDownloader.get_images list
+      ImageDownloader.get_images(list) if write_images
       list.clear
 
     rescue Exception => ex
@@ -49,7 +49,7 @@ class Product  < ActiveRecord::Base
       end
     end
 
-     ImageDownloader.get_images list if list.count()>0
+     ImageDownloader.get_images(list) if list.count()>0 and write_images
     list.clear
     end
 

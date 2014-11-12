@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'active_record'
 require 'logger'
-require 'mysql2'
 require 'yaml'
+require 'mysql2'
 
 
 class DatabaseConnector

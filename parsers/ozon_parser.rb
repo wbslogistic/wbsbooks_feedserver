@@ -78,7 +78,7 @@ class OzonParser
         get_node if @binding[@reader.name.to_sym]
 
         if products_table.count() == 1000
-          Product.write_product_list products_table,@reader,0,false
+          Product.write_product_list products_table,@reader,0,false,false
             products_count+=1000
             Helper.log_and " imported #{products_count} of books "
         end
@@ -89,9 +89,9 @@ class OzonParser
 
       end
       t2 = DateTime.now
-      Helper.log_and " Upload database import done! min: #{ ((t2.hour-t1.hour)*60 + t2.min-t1.min)  }"
+      Helper.log_and " Database import done! min: #{ ((t2.hour-t1.hour)*60 + t2.min-t1.min)  }"
 
-    Product.write_product_list products_table,@reader,0,false if products_table.count()>0
+    Product.write_product_list products_table,@reader,0,false,false if products_table.count()>0
 
 
 
