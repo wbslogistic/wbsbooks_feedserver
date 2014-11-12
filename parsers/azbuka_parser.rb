@@ -5,6 +5,7 @@ class AzbukaParser
   def parse
     puts "----- Start_Azbuka parser ! -------"
     getFileFtp
+    puts "---- Azbuka start parsing xml -------- "
     parse_with_libxml(@@config["azbuka_xml"])
 
   end
@@ -13,6 +14,7 @@ class AzbukaParser
 
    n_times(" Getting files from azbuka ftp ") do
       ftp = Net::FTP.new
+      ftp.passive=true
       ftp.connect("178.21.239.3", 21)
       ftp.login(@@config["azbuka_user"], @@config["azbuka_password"])
 
@@ -24,7 +26,7 @@ class AzbukaParser
       files =   ParsedFile.where(site_id: 1,file_name: time_file.to_s).count()
       if files==0
         Helper.delete_if_exists  @@config['azbuka_xml']
-       ftp.getbinaryfile("/Prays MMP/PraysAzbuka-Atticus.xml",@@config['azbuka_xml'], 1024)
+       ftp.getbinaryfile("/Prays MMP/PraysAzbuka-Atticus.xml",@@config['azbuka_xml'])
 
 
         parsed=  ParsedFile.new
@@ -131,7 +133,7 @@ class AzbukaParser
          if array_of_products.count()==500
            count+=500
            Product.write_product_list array_of_products,@reader,1
-           Helper.log_and "imported = " + count
+           Helper.log_and "imported = " + count.to_s
          end
         end
 
@@ -179,7 +181,7 @@ class AzbukaParser
       logger.info "info: Downloading #{file}."
       ftp.getbinaryfile(File.basename(file), file, 1024)
     rescue Net::FTPPermError => e
-      logger.info "warning: can't download #{File.basename(file)} from the remote server (#{e.message.tr("\n","")})."
+      logger.info "warning: can't download #{File.basenme(file)} from the remote server (#{e.message.tr("\n","")})."
     end
 
     ftp.close

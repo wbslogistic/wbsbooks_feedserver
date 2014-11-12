@@ -22,6 +22,7 @@ class Product  < ActiveRecord::Base
 
   def self.write_product_list list,reader = nil, site_id =nil , delete=true
 
+
     #deleting the existing ones
      Product.where(isbn: list.map{|p| p.isbn }.compact ,site_id: site_id.to_s ).delete_all if delete
 
@@ -31,8 +32,10 @@ class Product  < ActiveRecord::Base
         list.each do |pr|
           pr.save(:validate => false)
         end
-        list.clear
       end
+
+      ImageDownloader.get_images list
+      list.clear
 
     rescue Exception => ex
       Helper.log_and " Exception on saving product : " + ex.message + " trace = " + ex.backtrace.to_s
@@ -46,6 +49,7 @@ class Product  < ActiveRecord::Base
       end
     end
 
+     ImageDownloader.get_images list if list.count()>0
     list.clear
     end
 
