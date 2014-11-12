@@ -14,10 +14,20 @@ class Helper
     }
   end
 
+def get_ex ex,messaga
+  "exception :#{}  message #{ex.message} #{ex.backtrace.to_s}"
+end
 
   def self.log_and text
     puts text
     log text
   end
+
+
+  def self.delete_if_exists file
+   File.delete(file) if File.exist? file
+  end
+
+
 
 end
