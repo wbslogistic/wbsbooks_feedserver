@@ -1,6 +1,4 @@
 
-
-
 require 'rubygems'
 
 require 'require_all'
@@ -13,7 +11,6 @@ require_all 'helpers'
 require_all 'parsers'
 
 
-require 'require_all'
 require "xml"
 require "./database_connector"
 
