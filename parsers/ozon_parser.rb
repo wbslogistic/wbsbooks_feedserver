@@ -29,6 +29,7 @@ class OzonParser
   def parse
     if (File.exist? @@config["ozon_big_xml"] )
        read_ozon_parser(@@config["ozon_big_xml"])
+
     else
       Helper.log_and " Exception file not found #{@@config["ozon_big_xml"]}"
     end
@@ -65,17 +66,42 @@ class OzonParser
     @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
 
 
+    list_categories = []
       while(@reader.read)
         begin
         next if  @reader.node_type==15 or @reader.name =="#text"
 
+        if (@reader.name=="category")
+           category =  Category.new
+           category.name = @reader.read_inner_xml
+           category.self_id = @reader.get_attribute("id")
+           category.parent_id = @reader.get_attribute("parentId")
+           list_categories << category
+         next
+        end
+
+
+
         if (@reader.name=="offer")
-          products_table << @product if @product
+
+          Category.save_categories list_categories if list_categories.count > 0
+
+          products_table << @product if @product and @product.product_have_more_2000
           @product=OProduct.new
 
           next
         end
         get_node if @binding[@reader.name.to_sym]
+
+        if (@reader.name=="param")
+
+          if @reader.get_attribute("name").force_encoding("UTF-8") == "Тираж".force_encoding("UTF-8")
+            @product.print_run = @reader.read_inner_xml
+          end
+          @product.cover = @reader.read_inner_xml     if @reader.get_attribute("name").force_encoding("UTF-8") == "Тип обложки".force_encoding("UTF-8")
+        end
+
+
 
         if products_table.count() == 1000
           Product.write_product_list products_table,@reader,0,false,false
@@ -93,13 +119,11 @@ class OzonParser
 
     Product.write_product_list products_table,@reader,0,false,false if products_table.count()>0
 
-
-
   end
 
 
   def get_node
-    @product.send(@binding[@reader.name.to_sym] + "=", @reader.node.content) if !@product.send(@binding[@reader.name.to_sym])
+    @product.send(@binding[@reader.name.to_sym] + "=", @reader.read_inner_xml) if !@product.send(@binding[@reader.name.to_sym])
   end
 
 
