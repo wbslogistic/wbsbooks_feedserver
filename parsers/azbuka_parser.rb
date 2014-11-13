@@ -1,5 +1,8 @@
 
 
+
+
+
 class AzbukaParser
 
   def parse
@@ -7,7 +10,7 @@ class AzbukaParser
     getFileFtp
     puts "---- Azbuka start parsing xml -------- "
     parse_with_libxml(@@config["azbuka_xml"])
-
+    Product.aprove_new_comers
   end
 
   def getFileFtp
@@ -70,10 +73,10 @@ class AzbukaParser
         "NamesBeforeKey"  => "author",
         "PublicationDate"  => "year",
        "SubjectCode" => "subject_code",
-       "MeasureTypeCode"=> {"weight"  => Proc.new {  @reader.node.content.to_s.strip =="08"},
-                            "thickness"  => Proc.new {  @reader.node.content.to_s.strip =="03"},
-                            "height" => Proc.new {  @reader.node.content.to_s.strip =="01"},
-                            "width" =>  Proc.new {  @reader.node.content.to_s.strip =="02"}}
+       "MeasureTypeCode"=> {"weight"  => Proc.new {  @reader.read_inner_xml.to_s.strip =="08"},
+                            "thickness"  => Proc.new {  @reader.read_inner_xml.to_s.strip =="03"},
+                            "height" => Proc.new {  @reader.read_inner_xml.to_s.strip =="01"},
+                            "width" =>  Proc.new {  @reader.read_inner_xml.to_s.strip =="02"}}
     }
 
    create_azbuka_product
@@ -83,7 +86,7 @@ class AzbukaParser
       line+=1
         next if  @reader.node_type==15
        if (@reader.name=="Product")
-         array_of_products << @product if @product
+         array_of_products << @product if @product and @product.product_have_more_2000
          create_azbuka_product
          next
        end
@@ -96,8 +99,8 @@ class AzbukaParser
         case @reader.name
           when "ProductIDType"
             begin
-              next if (@reader.node.content.to_s.strip !="15")
-              @product.isbn =  @reader.node.next.next.content
+              next if (@reader.read_inner_xml.to_s.strip !="15")
+              @product.isbn =  @reader.node.next.next.inner_xml if @reader.node.next and @reader.node.next.next
               next
             rescue
               puts "book without isbn line:" + line.to_s
@@ -105,8 +108,8 @@ class AzbukaParser
             end
           when "PriceTypeCode"
             begin
-                next if @reader.node.content.to_s.strip !="01"
-                @product.price =  @reader.expand.next.next.content if @reader.expand.next.next
+                next if @reader.read_inner_xml.to_s.strip !="01"
+                @product.price =  @reader.expand.next.next.inner_xml if @reader.expand.next.next
                 @product.rise_price
                 next
             rescue Exception => ex
@@ -115,17 +118,17 @@ class AzbukaParser
             end
             next
           when "MediaFileLink"
-            if  !@reader.node.content.include? "_small"
-                @product.image = @@config["azbuka_image_url"] +  @reader.node.content.strip
+            if  !@reader.read_inner_xml.to_s.include? "_small"
+                @product.image = @@config["azbuka_image_url"] +  @reader.read_inner_xml.strip if @reader.read_inner_xml.strip !="" if @reader.read_inner_xml.strip !=""
             end
             next
           when "TitleType"
-            next if (@reader.node.content.to_s.strip !="01")
-            @product.name= @reader.expand.next.next.content if  @reader.expand.next.next &&   !@reader.expand.next.next.content.empty? && (!@product.name or @product.name.empty?)
+            next if (@reader.read_inner_xml.to_s.strip !="01")
+            @product.name= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.name or @product.name.empty?)
           when "NamesBeforeKey"
-            @product.author += @reader.node.content.strip
+            @product.author += @reader.read_inner_xml.to_s.strip
            when "KeyNames"
-             @product.author =  @reader.node.content.strip + " " + @product.author
+             @product.author =  @reader.read_inner_xml.to_s.strip + " " + @product.author
           else
             next
         end
@@ -152,10 +155,10 @@ class AzbukaParser
 
   def get_node
        if @binding[@reader.name].class.name!= "Hash"
-         @product.send(@binding[@reader.name] + "=", @reader.node.content)
+         @product.send(@binding[@reader.name] + "=", @reader.read_inner_xml)
        else
 
-         cont= @reader.expand.next.next.content if @reader.expand.next.next
+         cont= @reader.expand.next.next.inner_xml.to_s if @reader.expand.next.next
          return if !cont
 
          @binding[@reader.name].keys.each do |key|
