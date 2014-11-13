@@ -3,6 +3,7 @@ class ExmoParser
   def parse
     puts "----- Start_parsing Exmo ! -------"
     get_products
+    Product.aprove_new_comers
   end
 
   def get_products
@@ -44,7 +45,7 @@ class ExmoParser
           product= Product.new
           product.site_id="new_2"
           product.name= book['name']
-          product.image= book['source_picture'][content_txt]
+          product.image= book['source_picture'][content_txt] if  book['source_picture'][content_txt].strip !=""
           product.description = book['detail_text'][content_txt]
 
           product.author =  book['cover_authors'][content_txt]
