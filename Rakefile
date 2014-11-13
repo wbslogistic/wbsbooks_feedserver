@@ -1,8 +1,8 @@
 
-
+require 'rubygems'
 require 'active_record_migrations'
 require "yaml"
-require "mysql2"
+require "pg"
 
 
 
