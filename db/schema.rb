@@ -11,7 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141112211603) do
+ActiveRecord::Schema.define(version: 20141113151812) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "categories", force: true do |t|
+    t.string  "name"
+    t.integer "parent_id"
+    t.integer "self_id"
+  end
 
   create_table "o_products", force: true do |t|
     t.string  "name"
@@ -44,6 +53,11 @@ ActiveRecord::Schema.define(version: 20141112211603) do
   create_table "parsed_files", force: true do |t|
     t.integer "site_id"
     t.string  "file_name"
+  end
+
+  create_table "prod_test", force: true do |t|
+    t.text "name"
+    t.text "isbn"
   end
 
   create_table "products", force: true do |t|
