@@ -24,7 +24,7 @@ class Product  < ActiveRecord::Base
 
 
     #deleting the existing ones
-     Product.where(isbn: list.map{|p| p.isbn }.compact ,site_id: site_id).delete_all if delete
+     Product.where(isbn: list.map{|p| p.isbn }.compact ,site_id: site_id.to_s).delete_all if delete
 
     begin
       #transaction
