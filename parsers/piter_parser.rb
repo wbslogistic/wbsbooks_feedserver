@@ -3,8 +3,9 @@ class PiterParser
 
   def parse
     puts "----- Start_parsing Piter ! -------"
-    get_files_from_ftp
+   # get_files_from_ftp
     get_products
+    Product.aprove_new_comers
   end
 
 
@@ -37,7 +38,7 @@ class PiterParser
 
       file_name= "local_" + file + File.size(file).to_s
       if ParsedFile.where(site_id: 3,file_name: file_name).count()==0
-        products +=  extract_products_f_xml(file)
+         extract_products_f_xml(file)
       else
          Helper.log_and " File already parsed #{file_name}"
       end
@@ -77,7 +78,7 @@ class PiterParser
       if products_table.count()==100
         count_products+=100
 
-        Product.write_product_list products_table,@reader,2
+        Product.write_product_list products_table,@reader,3
         Helper.log_and " imported: " + count_products.to_s
        end
     rescue Exception => ex
@@ -91,7 +92,7 @@ class PiterParser
     parsed.save
 
   end
-   Product.write_product_list products_table,@reader,2 if products_table.count() >0
+   Product.write_product_list products_table,@reader,3 if products_table.count() >0
 end
 
 
@@ -142,9 +143,9 @@ end
 
 
   def get_node
-    @product.send(@binding[@reader.name.to_sym] + "=", @reader.node.content) if !@product.send(@binding[@reader.name.to_sym]) and @reader.node.content and @reader.node.content!=""
-    b = @binding[@reader.name.to_sym] + "=" +  @reader.node.content.to_s
-    a =33
+    @product.send(@binding[@reader.name.to_sym] + "=", @reader.read_inner_xml) if !@product.send(@binding[@reader.name.to_sym]) and @reader.read_inner_xml.to_s and @reader.read_inner_xml !=""
+  #  b = @binding[@reader.name.to_sym] + "=" +  @reader.read_inner_xml.to_s
+
 
   end
 
