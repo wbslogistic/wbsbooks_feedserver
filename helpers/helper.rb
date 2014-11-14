@@ -9,7 +9,7 @@ class Helper
 
 
   def self.log text
-    open('./log/product.log', 'a') { |f|
+    open('./log/product.log', 'a+') { |f|
       f.puts DateTime.now.to_s + "   " + text
     }
   end

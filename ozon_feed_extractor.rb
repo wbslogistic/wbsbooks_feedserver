@@ -37,7 +37,7 @@ require "./database_connector"
 
 
 
-puts ' ------- Feed extractor started ------- '
+Helper.log_and ' ------- Feed extractor started ------- '
 
 @@config  =       Psych.load_file( "./config/config.yml" )
 
@@ -45,7 +45,7 @@ puts ' ------- Feed extractor started ------- '
 def start
   #Product.destroy_all
 
-  parsers = [ AzbukaParser.new,ExmoParser.new, SzkoParser.new   ,  PiterParser.new  ]
+  parsers = [AzbukaParser.new,SzkoParser.new , PiterParser.new ,ExmoParser.new ]
 
   parsers.each do |parser|
      parser.parse
@@ -59,7 +59,7 @@ def n_times message
       yield
       break
     rescue Exception => ex
-      mes =  " Exception message #{ message}  Exception content: #{ex.message.to_s}"
+      mes =  " Exception message #{ message}  Exception content: #{ex.message.to_s} Trace= #{ex.trace}"
       Helper.log_and mes
     end
   end

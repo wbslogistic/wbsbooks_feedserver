@@ -1,9 +1,12 @@
 class ExmoParser
 
   def parse
-    puts "----- Start_parsing Exmo ! -------"
+    Helper.log_and "----- Start_parsing Exmo ! -------"
     get_products
     Product.aprove_new_comers
+
+
+    Helper.log_and "----- parsing Exmo  done ! -------"
   end
 
   def get_products
@@ -45,7 +48,7 @@ class ExmoParser
           product= Product.new
           product.site_id="new_2"
           product.name= book['name']
-          product.image= book['source_picture'][content_txt] if  book['source_picture'][content_txt].strip !=""
+          product.image= book['source_picture'][content_txt] if  book['source_picture'][content_txt].to_s.strip !=""
           product.description = book['detail_text'][content_txt]
 
           product.author =  book['cover_authors'][content_txt]
@@ -71,7 +74,7 @@ class ExmoParser
             end
 
           rescue Exception => ex
-          Helper.log_and " Exception parsing product exmo product index #{i} "
+          Helper.log_and " Exception parsing product exmo product index #{i} exception message: #{ex.message} trace: #{ex.backtrace} "
           end
 
         end

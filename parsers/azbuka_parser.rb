@@ -6,9 +6,9 @@
 class AzbukaParser
 
   def parse
-    puts "----- Start_Azbuka parser ! -------"
+    Helper.log_and  "----- Start_Azbuka parser ! -------"
     getFileFtp
-    puts "---- Azbuka start parsing xml -------- "
+    Helper.log_and "---- Azbuka start parsing xml -------- "
     parse_with_libxml(@@config["azbuka_xml"])
     Product.aprove_new_comers
   end
@@ -38,11 +38,10 @@ class AzbukaParser
         parsed.save
 
        ftp.close
-     end
+      end
+
     end
   end
-
-
 
 
 
@@ -59,8 +58,23 @@ class AzbukaParser
 
     if File.exist? path
 
+      files =   ParsedFile.where(site_id: 1,file_name: File.mtime(path)).count()
+      if files!=0
+        Helper.log_and "Azbuka: File already parsed!! #{path} - #{File.mtime(path)}"
+        return
 
+      end
+
+
+
+
+
+      begin
     @reader = XML::Reader.file(path)
+      rescue Exception => ex
+        Helper.log_and " Exception reading xml #{path} exception message: #{ex.message} trace: #{ex.backtrace} "
+      end
+
 
     array_of_products= []
     @product =nil
@@ -83,6 +97,7 @@ class AzbukaParser
      line=0
      count = 0
     while (@reader.read)
+      begin
       line+=1
         next if  @reader.node_type==15
        if (@reader.name=="Product")
@@ -138,9 +153,18 @@ class AzbukaParser
            Product.write_product_list array_of_products,@reader,1
            Helper.log_and "imported = " + count.to_s
          end
+        rescue Exception=>ex
+          Helper.log_and " Exception parsing product Azbuka product index #{line} exception message: #{ex.message} trace: #{ex.backtrace} "
+        end
+
         end
 
     Product.write_product_list array_of_products,@reader,1    if array_of_products.count()>0
+
+      parsed=  ParsedFile.new
+      parsed.site_id= 1
+      parsed.file_name= File.mtime(path)
+      parsed.save
 
     else
       Helper.log_and " File not present #{path}"

@@ -1,4 +1,7 @@
 
+
+
+
 class PiterParser
 
   def parse
@@ -36,14 +39,17 @@ class PiterParser
 
     Dir[ @@config['piter_xml_dir'] + "*.xml"].each do |file|
 
-      file_name= "local_" + file + File.size(file).to_s
-      if ParsedFile.where(site_id: 3,file_name: file_name).count()==0
-         extract_products_f_xml(file)
-      else
-         Helper.log_and " File already parsed #{file_name}"
+      begin
+          file_name= "local_" + file + File.size(file).to_s
+          if ParsedFile.where(site_id: 3,file_name: file_name).count()==0
+             extract_products_f_xml(file)
+          else
+             Helper.log_and " File already parsed #{file_name}"
+          end
+      rescue Exception => ex
+        Helper.log_and "Problem with file #{file} + ex #{ex.message.to_s}  trace = #{ex.backtrace} "
       end
     end
-    products
   end
 
 
@@ -55,7 +61,7 @@ class PiterParser
 
       @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
 
-  begin
+
 
    count_products =0
     while(@reader.read)
@@ -82,7 +88,7 @@ class PiterParser
         Helper.log_and " imported: " + count_products.to_s
        end
     rescue Exception => ex
-     p "Exception file =#{path} " +   ex.to_s + "trace=" + ex.backtrace.to_s
+     Helper.log_and "Exception file =#{path} message=" +   ex.message.to_s + "trace=" + ex.backtrace.to_s
       end
       end
 
@@ -91,7 +97,7 @@ class PiterParser
     parsed.file_name= "local_" + path + File.size(path).to_s
     parsed.save
 
-  end
+
    Product.write_product_list products_table,@reader,3 if products_table.count() >0
 end
 
@@ -107,7 +113,7 @@ end
       ftp.passive=true
       ftp.login @@config["piter_user"], @@config["piter_password"]
 
-      files = ftp.list('*.xml')
+      files = ftp.list('*.xml').sort
 
       p "downloading file from piter  "
 
@@ -132,7 +138,7 @@ end
         end     end     end
 
     rescue Exception => ex
-      raise "problem during ftp session Piter site " + ex.to_s
+      raise "problem during ftp session Piter site #{ex.message} trace = #{ex.backtrace}"
    ensure
       Helper.log_and "Closing ftp connection"
      ftp.close

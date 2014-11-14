@@ -29,7 +29,6 @@ class OzonParser
   def parse
     if (File.exist? @@config["ozon_big_xml"] )
        read_ozon_parser(@@config["ozon_big_xml"])
-
     else
       Helper.log_and " Exception file not found #{@@config["ozon_big_xml"]}"
     end

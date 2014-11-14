@@ -2,7 +2,7 @@
 class SzkoParser
 
   def parse
-     puts ' ----- Start_parsing Szco ! -------'
+     Helper.log_and  ' ----- Start_parsing Szco ! -------'
 
      url=  @@config["szko"]
      zip_path=  @@config["szko_zip"]
@@ -12,23 +12,39 @@ class SzkoParser
 
      n_times("Exception durring getting zip from SZKO") do
 
-     p "Getting zip from :#{url}"
+       Helper.log_and  "Getting zip from :#{url}"
 
+       begin
      http = Net::HTTP.start("web.szko.ru")
      resp = http.request_head("/prices/priceext.zip")
      file_size = resp['content-length']
      last_modified = resp['last-modified']
      http.finish
 
+       rescue Exception => ex
+         Helper.log_and "Problem with szko extraction of mettadata #{url} + ex #{ex.message.to_s}  trace = #{ex.backtrace} "
+       end
+
+
+
      if ParsedFile.where(site_id: "4", file_name: zip_path + "_" + last_modified ).count()==0
 
         Helper.delete_if_exists zip_path # deleting old zip
 
+        begin
+
         open(zip_path, 'wb') do |file|
           file << open(url).read
         end
+        rescue Exception => ex
+          Helper.log_and "Problem with download zip  #{url} + ex #{ex.message.to_s}  trace = #{ex.backtrace} "
 
-        puts " Unziping #{zip_path}"
+        end
+
+
+        begin
+
+        Helper.log_and  " Unziping #{zip_path}"
         unzip_file(zip_path,szko_path)
 
         new_file=  ParsedFile.new
@@ -39,8 +55,9 @@ class SzkoParser
 
         puts ' Unzip done!'
 
-
-
+        rescue Exception => ex
+        Helper.log_and "Problem with unziping  #{zip_path} + ex #{ex.message.to_s}  trace = #{ex.backtrace} "
+       end
      else
        Helper.log_and  zip_path + "_" + last_modified + " already parsed "
      end
@@ -64,9 +81,13 @@ class SzkoParser
     if ParsedFile.where(site_id: 4, file_name: path + time.to_s).count()==0
 
 
-
+  begin
       book = Spreadsheet.open path
       sheet1 = book.worksheet 0
+  rescue Exception => ex
+    Helper.log_and "Problem with opening spreedhet  #{path} + ex #{ex.message.to_s}  trace = #{ex.backtrace} "
+    end
+
 
       index = 0
     sheet1.each do |row|
@@ -95,7 +116,7 @@ class SzkoParser
        #index+=1
      end
       rescue Exception => ex
-        Helper.log_and " Exception on index: #{index} ex=#{ex.message} "
+        Helper.log_and " Exception on index: #{index} ex=#{ex.message} trace =#{ex.backtrace}"
       end
     end
 
