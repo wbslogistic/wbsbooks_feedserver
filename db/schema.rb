@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117194951) do
+ActiveRecord::Schema.define(version: 20141117201134) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 20141117194951) do
   end
 
   create_table "o_products", force: true do |t|
-    t.string  "titleRU"
-    t.decimal "price",             precision: 10, scale: 0
+    t.text    "titleRU"
+    t.decimal "price",                         precision: 10, scale: 0
     t.string  "currency"
     t.string  "Author"
     t.string  "Publisher"
@@ -41,13 +41,13 @@ ActiveRecord::Schema.define(version: 20141117194951) do
     t.string  "weight"
     t.string  "width"
     t.string  "thickness"
-    t.string  "Binding"
+    t.string  "Binding",           limit: 45
     t.string  "cover"
     t.integer "site_id"
     t.string  "height"
     t.string  "stock_level"
     t.integer "category_id"
-    t.string  "ImageURL"
+    t.string  "ImageURL",          limit: 350
   end
 
   create_table "parsed_files", force: true do |t|
@@ -61,8 +61,8 @@ ActiveRecord::Schema.define(version: 20141117194951) do
   end
 
   create_table "products", force: true do |t|
-    t.string  "titleRU"
-    t.decimal "price",             precision: 10, scale: 0
+    t.text    "titleRU"
+    t.decimal "price",                         precision: 10, scale: 0
     t.string  "currency"
     t.string  "Author"
     t.string  "Publisher"
@@ -79,13 +79,13 @@ ActiveRecord::Schema.define(version: 20141117194951) do
     t.string  "weight"
     t.string  "width"
     t.string  "thickness"
-    t.string  "Binding"
+    t.string  "Binding",           limit: 45
     t.string  "cover"
     t.string  "site_id"
     t.string  "height"
     t.string  "stock_level"
     t.integer "category_id"
-    t.string  "ImageURL"
+    t.string  "ImageURL",          limit: 350
   end
 
 end
