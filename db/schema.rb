@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117201134) do
+ActiveRecord::Schema.define(version: 20141117205523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,6 +86,18 @@ ActiveRecord::Schema.define(version: 20141117201134) do
     t.string  "stock_level"
     t.integer "category_id"
     t.string  "ImageURL",          limit: 350
+    t.string  "PublicationDate"
+    t.string  "ReleaseDate"
+    t.string  "AuthorName"
+    t.decimal "VAT"
+    t.string  "rrp"
+    t.integer "ozon_id"
+    t.string  "source"
+    t.string  "source_id"
+    t.string  "Format"
+    t.string  "SessionID"
+    t.integer "Confirmed"
+    t.integer "old_id"
   end
 
 end
