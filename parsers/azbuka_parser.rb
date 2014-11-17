@@ -48,7 +48,7 @@ class AzbukaParser
 
   def create_azbuka_product
     @product =Product.new
-    @product.author=""
+    @product.Author=""
     @product.currency= "RUB"
     @product.site_id="new_1"
 
@@ -81,11 +81,11 @@ class AzbukaParser
 
 
    @binding=   {
-        "PublisherName" =>  "editor",
-        "InitialPrintRun"  => "print_run",
-        "NumberOfPages"  => "page_count",
-        "NamesBeforeKey"  => "author",
-        "PublicationDate"  => "year",
+        "PublisherName" =>  "Publisher",
+        "InitialPrintRun"  => "PrintRun",
+        "NumberOfPages"  => "Pages",
+        "NamesBeforeKey"  => "Author",
+        "PublicationDate"  => "Year",
        "SubjectCode" => "subject_code",
        "MeasureTypeCode"=> {"weight"  => Proc.new {  @reader.read_inner_xml.to_s.strip =="08"},
                             "thickness"  => Proc.new {  @reader.read_inner_xml.to_s.strip =="03"},
@@ -139,11 +139,11 @@ class AzbukaParser
             next
           when "TitleType"
             next if (@reader.read_inner_xml.to_s.strip !="01")
-            @product.name= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.name or @product.name.empty?)
+            @product.titleRU= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.titleRU or @product.titleRU.empty?)
           when "NamesBeforeKey"
-            @product.author += @reader.read_inner_xml.to_s.strip
+            @product.Author += @reader.read_inner_xml.to_s.strip
            when "KeyNames"
-             @product.author =  @reader.read_inner_xml.to_s.strip + " " + @product.author
+             @product.Author =  @reader.read_inner_xml.to_s.strip + " " + @product.Author
           else
             next
         end

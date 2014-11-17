@@ -38,20 +38,20 @@ class OzonParser
   def read_ozon_parser path
 
     @binding=
-        {   name: "name",
+        {   name: "titleRU",
             price: "price",
             categoryId: "category_id",
             currencyId: "currency",
-            author: "author",
+            author: "Author",
             picture: "image",
-            publisher: "editor",
+            publisher: "Publisher",
             language: "language",
-            page_extent: "page_count",
-            description:"description",
+            page_extent: "Pages",
+            description:"descriptionRU",
             barcode: "barcode",
-            binding: "format",
+            binding: "Binding",
             ISBN:"isbn",
-            year: "year"
+            year: "Year"
         }
 
      products_count= 0
@@ -95,7 +95,7 @@ class OzonParser
         if (@reader.name=="param")
 
           if @reader.get_attribute("name").force_encoding("UTF-8") == "Тираж".force_encoding("UTF-8")
-            @product.print_run = @reader.read_inner_xml
+            @product.PrintRun = @reader.read_inner_xml
           end
           @product.cover = @reader.read_inner_xml     if @reader.get_attribute("name").force_encoding("UTF-8") == "Тип обложки".force_encoding("UTF-8")
         end

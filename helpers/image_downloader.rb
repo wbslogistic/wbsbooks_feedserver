@@ -5,8 +5,8 @@ class ImageDownloader
 
     list_of_products.each do |product|
 
-      next   if !product.image_path or product.image=="" or !product.image or !product.isbn or  product.isbn =="" or  product.image.strip[-1]=="/"
-         if !File.exist?( product.image_path  )
+      next   if !product.ImageURL or product.image=="" or !product.image or !product.isbn or  product.isbn =="" or  product.image.strip[-1]=="/"
+         if !File.exist?( product.ImageURL  )
           begin
 
 
@@ -16,7 +16,7 @@ class ImageDownloader
 
 
 
-             #product.image_path = path_new_file
+             #product.ImageURL = path_new_file
              image = Magick::ImageList.new
              image.from_blob(image_from_url.read)
 
@@ -27,9 +27,9 @@ class ImageDownloader
                  x =  (image.x_resolution/ factor).to_i
 
                  image1024 = image.resize(x,y)
-                 image1024.write product.image_path
+                 image1024.write product.ImageURL
               else
-                image.write product.image_path
+                image.write product.ImageURL
               end
 
            end

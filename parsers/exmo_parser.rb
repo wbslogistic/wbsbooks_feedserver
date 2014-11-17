@@ -47,22 +47,22 @@ class ExmoParser
 
           product= Product.new
           product.site_id="new_2"
-          product.name= book['name']
+          product.titleRU= book['name']
           product.image= book['source_picture'][content_txt] if  book['source_picture'][content_txt].to_s.strip !=""
-          product.description = book['detail_text'][content_txt]
+          product.descriptionRU = book['detail_text'][content_txt]
 
-          product.author =  book['cover_authors'][content_txt]
+          product.Author =  book['cover_authors'][content_txt]
 
           product.isbn = book['isbnn'][content_txt]
           product.weight =book['brgew'][content_txt]
           product.cover = book['cover'][content_txt]
-          product.editor = book['publi'][content_txt]
+          product.Publisher = book['publi'][content_txt]
           product.price = book['price'][content_txt]
           product.rise_price
 
-          product.page_count = book['qtypg'][content_txt]
-          product.format = book['formt']['name']
-          product.year = book['ldate_d'][content_txt]
+          product.Pages = book['qtypg'][content_txt]
+          product.Binding = book['formt']['name']
+          product.Year = book['ldate_d'][content_txt]
           product.width = book['width'][content_txt]
           product.height = book['height'][content_txt]
 

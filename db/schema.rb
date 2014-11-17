@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141113151812) do
+ActiveRecord::Schema.define(version: 20141117194951) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,31 +23,31 @@ ActiveRecord::Schema.define(version: 20141113151812) do
   end
 
   create_table "o_products", force: true do |t|
-    t.string  "name"
+    t.string  "titleRU"
     t.decimal "price",             precision: 10, scale: 0
     t.string  "currency"
-    t.string  "author"
-    t.string  "editor"
-    t.integer "year"
+    t.string  "Author"
+    t.string  "Publisher"
+    t.integer "Year"
     t.string  "isbn"
     t.string  "image"
     t.string  "language"
-    t.string  "page_count"
-    t.text    "description"
+    t.string  "Pages"
+    t.text    "descriptionRU"
     t.string  "barcode"
-    t.integer "print_run"
+    t.integer "PrintRun"
     t.string  "subject_code"
     t.string  "measure_type_code"
     t.string  "weight"
     t.string  "width"
     t.string  "thickness"
-    t.string  "format"
+    t.string  "Binding"
     t.string  "cover"
     t.integer "site_id"
     t.string  "height"
     t.string  "stock_level"
     t.integer "category_id"
-    t.string  "image_path"
+    t.string  "ImageURL"
   end
 
   create_table "parsed_files", force: true do |t|
@@ -61,31 +61,31 @@ ActiveRecord::Schema.define(version: 20141113151812) do
   end
 
   create_table "products", force: true do |t|
-    t.string  "name"
+    t.string  "titleRU"
     t.decimal "price",             precision: 10, scale: 0
     t.string  "currency"
-    t.string  "author"
-    t.string  "editor"
-    t.integer "year"
+    t.string  "Author"
+    t.string  "Publisher"
+    t.integer "Year"
     t.string  "isbn"
     t.string  "image"
     t.string  "language"
-    t.string  "page_count"
-    t.text    "description"
+    t.string  "Pages"
+    t.text    "descriptionRU"
     t.string  "barcode"
-    t.integer "print_run"
+    t.integer "PrintRun"
     t.string  "subject_code"
     t.string  "measure_type_code"
     t.string  "weight"
     t.string  "width"
     t.string  "thickness"
-    t.string  "format"
+    t.string  "Binding"
     t.string  "cover"
     t.string  "site_id"
     t.string  "height"
     t.string  "stock_level"
     t.integer "category_id"
-    t.string  "image_path"
+    t.string  "ImageURL"
   end
 
 end

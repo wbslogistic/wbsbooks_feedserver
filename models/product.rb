@@ -111,7 +111,7 @@ class Product  < ActiveRecord::Base
     Helper.log_and "Aprove new comers from szko "
     Product.connection.execute("update products T1
       set  category_id= T2.category_id , site_id=replace( T1.site_id,'new_',''),
-      author=T2.author, name=T2.name,   year=T2.year,image=T2.image, page_count =T2.page_count, description =T2.description
+      Author=T2.Author, titleRU=T2.titleRU,   Year=T2.Year,image=T2.image, Pages =T2.Pages, descriptionRU =T2.descriptionRU
       FROM o_products  T2
       where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and
        T1.site_id='new_4' and  T1.isbn is not NULL and  T1.isbn<> '';  commit;")
@@ -127,9 +127,9 @@ class Product  < ActiveRecord::Base
 
   def product_have_more_2000
     begin
-    return true if !self.print_run
+    return true if !self.PrintRun
 
-    return false if self.print_run.to_i < 2000 and self.print_run.to_s.is_number?
+    return false if self.PrintRun.to_i < 2000 and self.PrintRun.to_s.is_number?
     rescue Exception => ex
        return true
     end
