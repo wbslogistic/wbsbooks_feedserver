@@ -37,7 +37,7 @@ class Product  < ActiveRecord::Base
           exension="" if !exension
 
           path_new_file = @@config["images_dir"] + pr.isbn  + "__" + pr.site_id.to_s.gsub("new","") +  "__." + exension
-          pr.image_path=path_new_file
+          pr.ImageURL=path_new_file
           end
 
           pr.save(:validate => false)
