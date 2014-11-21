@@ -106,7 +106,7 @@ class SzkoParser
       product.price = row[4]
       product.rise_price
 
-      product.stock_level =row[8],to_s.strip
+      product.stock_level =row[8].to_s.strip
       product.isbn =  row[10]
       product.barcode= row[10]
       product.Publisher = row[13]
@@ -124,7 +124,7 @@ class SzkoParser
        #index+=1
      end
       rescue Exception => ex
-        Helper.log_and " Exception on index: #{index} ex=#{ex.message} trace =#{ex.backtrace}"
+        Helper.log_and " Exception on index: #{index} ex=#{ex.message} trace =#{ex.backtrace.to_s}"
       end
     end
 
