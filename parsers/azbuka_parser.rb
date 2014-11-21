@@ -93,18 +93,23 @@ class AzbukaParser
                             "width" =>  Proc.new {  @reader.read_inner_xml.to_s.strip =="02"}}
     }
 
-   create_azbuka_product
+   #create_azbuka_product
      line=0
      count = 0
+      started = false
     while (@reader.read)
+
       begin
       line+=1
         next if  @reader.node_type==15
        if (@reader.name=="Product")
+         started =true
          array_of_products << @product if @product and @product.product_have_more_2000
          create_azbuka_product
          next
        end
+
+       next if !started
 
         if @binding[@reader.name]
           get_node

@@ -60,10 +60,12 @@ class OzonParser
     t1 = DateTime.now
 
     OProduct.delete_all
+
     @product = OProduct.new
 
     @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
 
+    products_started = false
 
     list_categories = []
       while(@reader.read)
@@ -83,6 +85,8 @@ class OzonParser
 
         if (@reader.name=="offer")
 
+          products_started= true
+
           Category.save_categories list_categories if list_categories.count > 0
 
           products_table << @product if @product and @product.product_have_more_2000
@@ -90,6 +94,9 @@ class OzonParser
 
           next
         end
+
+        next if  !products_started
+
         get_node if @binding[@reader.name.to_sym]
 
         if (@reader.name=="param")

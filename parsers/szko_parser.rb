@@ -90,8 +90,14 @@ class SzkoParser
 
 
       index = 0
+      first =true
     sheet1.each do |row|
       begin
+        if first
+          first =false
+          next
+        end
+
       index+=1
       product= Product.new
       product.site_id="new_4"

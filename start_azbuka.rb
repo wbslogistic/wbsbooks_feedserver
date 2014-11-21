@@ -42,32 +42,10 @@ Helper.log_and ' ------- Feed extractor started ------- '
 @@config  =       Psych.load_file( "./config/config.yml" )
 
 
-def start
-  #Product.destroy_all
-
-  parsers = [SzkoParser.new , PiterParser.new ,ExmoParser.new,AzbukaParser.new]
-
-  parsers.each do |parser|
-     parser.parse
- end
-end
-
-
-
-
 
 DatabaseConnector.connect_to_database
 
 
-start
 
-
-
-
-
-
-
-
-
-
-
+parser = AzbukaParser.new
+parser.parse

@@ -97,7 +97,7 @@ class Product  < ActiveRecord::Base
         FROM o_products  T2
         where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and  T1.site_id<>'new_4' and  T1.isbn is not NULL and  T1.isbn<> '';
   commit; ")
-    Helper.log_and "Comers approved "
+    Helper.log_and "Comers are approved "
 
     end
       rescue Exception => ex
@@ -116,9 +116,9 @@ class Product  < ActiveRecord::Base
       where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and
        T1.site_id='new_4' and  T1.isbn is not NULL and  T1.isbn<> '';  commit;")
 
-    Helper.log_and "Comers from SZKO approved! "
+    Helper.log_and "Comers from SZKO are approved! "
   rescue Exception => ex
-    Helper.log_and "problem with sql approve new commers #{ex.message }"
+    Helper.log_and "problem with sql approving new commers #{ex.message }"
   end
 
   end

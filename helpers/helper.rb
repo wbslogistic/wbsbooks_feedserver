@@ -41,3 +41,14 @@ class String
 end
 
 
+def n_times message
+  @@config["times_to_try"].to_i.times do |t|
+    begin
+      yield
+      break
+    rescue Exception => ex
+      mes =  " Exception message #{ message}  Exception content: #{ex.message.to_s} Trace= #{ex.trace}"
+      Helper.log_and mes
+    end
+  end
+end

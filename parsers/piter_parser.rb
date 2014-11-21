@@ -56,9 +56,7 @@ class PiterParser
   def extract_products_f_xml path
     products_table = []
     imp_count = 0
-   @product = Product.new
-   @product.site_id="new_3"
-
+    started =false
       @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
 
 
@@ -70,6 +68,7 @@ class PiterParser
 
 
      if (@reader.name=="Product")
+       started=true
        if @product
          @product.Year = @product.Year.to_s[0..3] if @product.Year and @product.Year.to_s.length >= 4
          @product.rise_price
@@ -79,6 +78,8 @@ class PiterParser
        @product.site_id="new_3"
        next
      end
+
+     next if !started
        get_node if @binding[@reader.name.to_sym]
 
       if products_table.count()==100
