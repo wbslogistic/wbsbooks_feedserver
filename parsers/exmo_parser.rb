@@ -56,7 +56,7 @@ class ExmoParser
           product.isbn = book['isbnn'][content_txt]
           product.weight =book['brgew'][content_txt]
           product.cover = book['cover'][content_txt]
-          product.Publisher = book['publi'][content_txt]
+          product.Publisher = book['publi']['name']
           product.price = book['price'][content_txt]
           product.rise_price
 
