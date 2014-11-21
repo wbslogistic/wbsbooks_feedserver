@@ -85,6 +85,7 @@ class AzbukaParser
         "InitialPrintRun"  => "PrintRun",
         "NumberOfPages"  => "Pages",
         "NamesBeforeKey"  => "Author",
+        "OnHand" => "stock_level",
         "PublicationDate"  => "Year",
        "SubjectCode" => "subject_code",
        "MeasureTypeCode"=> {"weight"  => Proc.new {  @reader.read_inner_xml.to_s.strip =="08"},
@@ -119,8 +120,12 @@ class AzbukaParser
         case @reader.name
           when "ProductIDType"
             begin
-              next if (@reader.read_inner_xml.to_s.strip !="15")
-              @product.isbn =  @reader.node.next.next.inner_xml if @reader.node.next and @reader.node.next.next
+              if (@reader.read_inner_xml.to_s.strip =="15")
+                @product.isbn =  @reader.node.next.next.inner_xml if @reader.node.next and @reader.node.next.next
+              end
+              if (@reader.read_inner_xml.to_s.strip =="03")
+                @product.barcode =  @reader.node.next.next.inner_xml if @reader.node.next and @reader.node.next.next
+              end
               next
             rescue
               puts "book without isbn line:" + line.to_s
@@ -149,8 +154,15 @@ class AzbukaParser
             @product.Author += @reader.read_inner_xml.to_s.strip
            when "KeyNames"
              @product.Author =  @reader.read_inner_xml.to_s.strip + " " + @product.Author
+          #when "ProductAvailability"
+           # @product.stock_level =  @reader.read_inner_xml.to_s.strip
+          when "TextTypeCode"
+            next if (@reader.read_inner_xml.to_s.strip !="01")
+            @product.descriptionRU= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.titleRU or @product.titleRU.empty?)
+
           else
             next
+
         end
 
          if array_of_products.count()==500

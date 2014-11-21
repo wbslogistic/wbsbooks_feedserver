@@ -65,6 +65,8 @@ class ExmoParser
           product.Year = book['ldate_d'][content_txt]
           product.width = book['width'][content_txt]
           product.height = book['height'][content_txt]
+         # product.stock_level = book['stock_level'][content_txt] stock level not found
+
 
           hundred_of_products << product
 

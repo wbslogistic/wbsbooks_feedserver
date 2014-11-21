@@ -106,6 +106,7 @@ class SzkoParser
       product.price = row[4]
       product.rise_price
 
+      product.stock_level =row[8],to_s.strip
       product.isbn =  row[10]
       product.barcode= row[10]
       product.Publisher = row[13]
