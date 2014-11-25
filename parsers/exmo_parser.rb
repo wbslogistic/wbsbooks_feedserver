@@ -15,7 +15,7 @@ class ExmoParser
 
     response =""
     n_times("Action: Getting first eskmo product xml(100 elements) ") do
-      response = HTTParty.get("https://partners.eksmo.ru/wservices/xml/v1/?key=#{@@config["eksmo_key"]}&action=products_full&full=y")
+      response = HTTParty.get(@@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y")
 #
     end
 
@@ -27,7 +27,7 @@ class ExmoParser
 
     for pag in 2..pages.items.to_i
       n_times(" Getting  eskmo products page #{pag}" ) do
-        response = HTTParty.get(  "https://partners.eksmo.ru/wservices/xml/v1/?key=#{@@config["eksmo_key"]}&action=products_full&full=y&page=#{pag}")
+        response = HTTParty.get( @@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&page=#{pag}")
        end
 
        Helper.log_and(" Eskmo getting products from page #{pag} ")
