@@ -1,4 +1,4 @@
-class Helper
+module Helper
 
   def self.round_price product
      if product.price and product.price.length > 0
@@ -28,6 +28,11 @@ end
    File.delete(file) if File.exist? file
   end
 
+  def get_node
+    @product.send(@binding[@reader.name.to_sym] + "=", @reader.read_inner_xml) if !@product.send(@binding[@reader.name.to_sym]) and @reader.read_inner_xml.to_s and @reader.read_inner_xml !=""
+
+  end
+
 
 
 end
@@ -47,8 +52,12 @@ def n_times message
       yield
       break
     rescue Exception => ex
-      mes =  " Exception message #{ message}  Exception content: #{ex.message.to_s} Trace= #{ex.trace}"
+      mes =  " Exception message #{ message}  Exception content: #{ex.message.to_s} Trace= #{ex.backtrace}"
       Helper.log_and mes
     end
   end
 end
+
+
+
+
