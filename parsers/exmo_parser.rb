@@ -1,4 +1,9 @@
+
+require_all 'helpers'
+
 class ExmoParser
+
+  include Helper
 
   def parse
     Helper.log_and "----- Start_parsing Exmo ! -------"
@@ -15,7 +20,19 @@ class ExmoParser
 
     response =""
     n_times("Action: Getting first eskmo product xml(100 elements) ") do
-      response = HTTParty.get(@@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y")
+
+       #WORKING NEED TO REWRITE PARSING PROCESS !!!!
+
+
+      File.delete @@config["exmo_xml"] if (File.exist? @@config["exmo_xml"])
+
+      open(@@config["exmo_xml"], "wb") do |file|
+       open(@@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&action=products") do |remote_f|
+         file.write(remote_f.read)
+       end
+       end
+
+      response = HTTParty.get(@@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&action=products")
 #
     end
 
@@ -23,11 +40,12 @@ class ExmoParser
    pages.items # total count of items
    pages.all #number of pages
 
+    #extract_products_from_xml @@config["exmo_xml"]
      extract_products(response["result"]["products"]["product"])
 
     for pag in 2..pages.items.to_i
       n_times(" Getting  eskmo products page #{pag}" ) do
-        response = HTTParty.get( @@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&page=#{pag}")
+        response = HTTParty.get( @@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&page=#{pag}&action=products")
        end
 
        Helper.log_and(" Eskmo getting products from page #{pag} ")
@@ -83,6 +101,81 @@ class ExmoParser
 
      Product.write_product_list hundred_of_products,nil,2 if hundred_of_products.count() >0
 
+  end
+
+  def extract_products_from_xml path
+
+    #define auto bindings
+    @binding=
+        {
+            brgew: "weight",
+            price: "price",
+            isbnn: "isbn",
+            width: "width",
+            height: "height",
+            ldate_d:"Year", #NEED CLEANING !!!!
+            qtypg: "Pages",
+            cover_authors: "Author",
+            name: "titleRU",
+            detail_text:"descriptionRU",
+            Currency: "currency",
+            source_picture: "image"
+
+            #Barcode: "barcode", #not found
+            #Thickness: "thickness", # not found
+            #InitialPrintRun:"PrintRun", # not found
+
+#            Format: "Binding", # special
+ #           StockLevel:"stock_level" # special
+
+        }
+
+
+    products_table = []
+    imp_count = 0
+    started =false
+    @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
+
+
+
+    count_products =0
+    while(@reader.read)
+      begin
+      next if  @reader.node_type==15 or @reader.node_type=="#text" or @reader.name=="#text"
+
+      # ---------------------------------------------INSERTED ----------------
+      if (@reader.name=="product")
+
+        started=true
+        if @product
+          @product.Year = @product.Year.to_s[-1..-3] if @product.Year and @product.Year.to_s.length >= 4
+          @product.rise_price
+          products_table << @product
+        end
+
+        @product=Product.new
+        @product.site_id="new_1"
+        next
+      end
+
+
+    next if !started
+    get_node if @binding[@reader.name.to_sym]
+
+      #TODO : add SPECIAL CASES
+
+    if products_table.count()==100
+      count_products+=100
+
+      Product.write_product_list products_table,@reader,3
+      Helper.log_and " imported: " + count_products.to_s
+    end
+    rescue Exception => ex
+    Helper.log_and "Exception file =#{path} message=" +   ex.message.to_s + "trace=" + ex.backtrace.to_s
+      end
+    end
+
+     Product.write_product_list products_table,@reader,3 if products_table.count() >0
   end
 
 end
