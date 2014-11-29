@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117205523) do
+ActiveRecord::Schema.define(version: 20141127102857) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,42 +61,42 @@ ActiveRecord::Schema.define(version: 20141117205523) do
   end
 
   create_table "products", force: true do |t|
-    t.text    "titleRU"
+    t.text    "titleru"
     t.decimal "price",                         precision: 10, scale: 0
     t.string  "currency"
-    t.string  "Author"
-    t.string  "Publisher"
-    t.integer "Year"
+    t.string  "author"
+    t.string  "publisher"
+    t.integer "year"
     t.string  "isbn"
     t.string  "image"
     t.string  "language"
-    t.string  "Pages"
-    t.text    "descriptionRU"
+    t.string  "pages"
+    t.text    "descriptionru"
     t.string  "barcode"
-    t.integer "PrintRun"
+    t.integer "printrun"
     t.string  "subject_code"
     t.string  "measure_type_code"
     t.string  "weight"
     t.string  "width"
     t.string  "thickness"
-    t.string  "Binding",           limit: 45
+    t.string  "binding",           limit: 45
     t.string  "cover"
     t.string  "site_id"
     t.string  "height"
     t.string  "stock_level"
     t.integer "category_id"
-    t.string  "ImageURL",          limit: 350
-    t.string  "PublicationDate"
-    t.string  "ReleaseDate"
-    t.string  "AuthorName"
-    t.decimal "VAT"
+    t.string  "imageurl",          limit: 350
+    t.string  "publicationdate"
+    t.string  "releasedate"
+    t.string  "authorname"
+    t.decimal "vat"
     t.string  "rrp"
     t.integer "ozon_id"
     t.string  "source"
     t.string  "source_id"
-    t.string  "Format"
-    t.string  "SessionID"
-    t.integer "Confirmed"
+    t.string  "format"
+    t.string  "sessionid"
+    t.integer "confirmed"
     t.integer "old_id"
   end
 
