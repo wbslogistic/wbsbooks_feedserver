@@ -3,7 +3,7 @@ require 'csv'
 
 
 def create_csv_template
-  columns= "name,description,slug,meta_description,meta_keywords,shipping_category_id,sku,price,Taxons,Available On,p_count,Images,product_properties,name_en,titile_en,description_en".split(",")
+  columns= "name,description,slug,meta_description,meta_keywords,shipping_category_id,sku,price,Taxons,Available On,p_count,Images,product_properties,translation".split(",")
      Helper.delete_if_exists @@config["spree_csv_path"]
     CSV.open(@@config["spree_csv_path"] , "w",{:col_sep => ","}) do |csv|
       csv << columns
@@ -42,8 +42,8 @@ def  write_to_csv product_obj , i
 
   product_properties += "Thickness:" + product_obj.thickness.to_s + ";" if product_obj.thickness
   product_properties += "Format:" + product_obj.binding.to_s  + ";" if product_obj.binding
-  product_properties += "In stock:" + product_obj.p.stock_level.to_s  + ";" if product_obj.p.stock_level
-  product_properties += "Page count:" + product_obj.p.pages.to_s  + ";" if product_obj.p.pages
+  product_properties += "In stock:" + product_obj.stock_level.to_s  + ";" if product_obj.stock_level
+  product_properties += "Page count:" + product_obj.pages.to_s  + ";" if product_obj.pages
   product_properties= product_properties.gsub(";","|")
 
 
@@ -56,13 +56,16 @@ def  write_to_csv product_obj , i
 
 #-------------------TRANSLATION------------------------------------------
 
-  translation = Translation.find_by(:bookid =>  product_obj.id)
+  translation = Booktranslation.find_by(:bookid =>  product_obj.id)
 
   translation_title = (translation) ? translation.titleen  : ""
   translation_description = (translation) ? translation.descriptionen  : ""
 
+  translation_text = translation_title + ":"  + translation_description
+  translation_text = nil if translation_text==":"
+
   values =  [product_obj.titleru.gsub("\n"," </br> "), product_obj.descriptionru.gsub("\n"," </br> "),"slug_"+
-             (182+i).to_s,"meta description","meta keyword","default",product_obj.isbn, product_obj.price,taxons,"2014-01-01",33,image_url,product_properties,translation_title,translation_description]
+             (182+i).to_s,"meta description","meta keyword","default",product_obj.isbn, product_obj.price,taxons,"2014-01-01",33,image_url,product_properties,translation_text]
 
              #stock_level,p.price,p.price,"","general","","", "default"]
 
