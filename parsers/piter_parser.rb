@@ -1,5 +1,5 @@
 
-
+require_all 'helpers'
 
 
 class PiterParser
@@ -64,7 +64,7 @@ class PiterParser
    count_products =0
     while(@reader.read)
       begin
-      next if  @reader.node_type==15 or @reader.node_type=="#text"
+      next if  @reader.node_type==15 or @reader.node_type=="#text" or @reader.name=="#text"
 
 
      if (@reader.name=="Product")
@@ -149,12 +149,6 @@ end
   end
 
 
-  def get_node
-    @product.send(@binding[@reader.name.to_sym] + "=", @reader.read_inner_xml) if !@product.send(@binding[@reader.name.to_sym]) and @reader.read_inner_xml.to_s and @reader.read_inner_xml !=""
-  #  b = @binding[@reader.name.to_sym] + "=" +  @reader.read_inner_xml.to_s
-
-
-  end
 
 
 end
