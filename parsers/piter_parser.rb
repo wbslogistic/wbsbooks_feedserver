@@ -18,18 +18,18 @@ class PiterParser
     @binding=
    {
    Price: "price",
-   Title: "titleRU",
+   Title: "titleru",
 	 Author: "Author",
-   Description:"descriptionRU",
+   Description:"descriptionru",
 	 Currency: "currency",
-   ReleaseDate:"Year",
+   ReleaseDate:"year",
    Barcode: "barcode",
    ISBN13: "isbn",
    Width: "width",
 	 Thickness: "thickness",
-   Format: "Binding",
+   Format: "binding",
 	 Weight: "weight",
-   Pages: "Pages",
+   Pages: "pages",
    Picture: "image",
 	 InitialPrintRun:"PrintRun",
    StockLevel:"stock_level",
@@ -70,7 +70,7 @@ class PiterParser
      if (@reader.name=="Product")
        started=true
        if @product
-         @product.Year = @product.Year.to_s[0..3] if @product.Year and @product.Year.to_s.length >= 4
+         @product.year = @product.year.to_s[0..3] if @product.year and @product.year.to_s.length >= 4
          @product.rise_price
          products_table << @product
        end

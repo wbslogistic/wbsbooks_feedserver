@@ -21,19 +21,22 @@ class ExmoParser
     response =""
     n_times("Action: Getting first eskmo product xml(100 elements) ") do
 
-       #WORKING NEED TO REWRITE PARSING PROCESS !!!!
 
 
-      File.delete @@config["exmo_xml"] if (File.exist? @@config["exmo_xml"])
+      #-------------------- THIS SECTION COMENTED till I will work again on optimization
 
-      open(@@config["exmo_xml"], "wb") do |file|
-       open(@@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&action=products") do |remote_f|
-         file.write(remote_f.read)
-       end
-       end
+      # File.delete @@config["exmo_xml"] if (File.exist? @@config["exmo_xml"])
+      #
+      # open(@@config["exmo_xml"], "wb") do |file|
+      #  open(@@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&action=products") do |remote_f|
+      #    file.write(remote_f.read)
+      #  end
+      # end
+
+      #-------------------------------------END COMENT ---------------------------------------
 
       response = HTTParty.get(@@config["eksmo_url"] + @@config["eksmo_key"] +"&full=y&action=products")
-#
+
     end
 
     pages = response["result"]["pages"].to_obj
@@ -65,22 +68,22 @@ class ExmoParser
 
           product= Product.new
           product.site_id="new_2"
-          product.titleRU= book['name']
+          product.titleru= book['name']
           product.image= book['source_picture'][content_txt] if  book['source_picture'][content_txt].to_s.strip !=""
-          product.descriptionRU = book['detail_text'][content_txt]
+          product.descriptionru = book['detail_text'][content_txt]
 
-          product.Author =  book['cover_authors'][content_txt]
+          product.author =  book['cover_authors'][content_txt]
 
           product.isbn = book['isbnn'][content_txt]
           product.weight =book['brgew'][content_txt]
           product.cover = book['cover'][content_txt]
-          product.Publisher = book['publi']['name']
+          product.publisher = book['publi']['name']
           product.price = book['price'][content_txt]
           product.rise_price
 
-          product.Pages = book['qtypg'][content_txt]
-          product.Binding = book['formt']['name']
-          product.Year = book['ldate_d'][content_txt]
+          product.pages = book['qtypg'][content_txt]
+          product.binding = book['formt']['name']
+          product.year = book['ldate_d'][content_txt]
           product.width = book['width'][content_txt]
           product.height = book['height'][content_txt]
          # product.stock_level = book['stock_level'][content_txt] stock level not found
@@ -113,11 +116,11 @@ class ExmoParser
             isbnn: "isbn",
             width: "width",
             height: "height",
-            ldate_d:"Year", #NEED CLEANING !!!!
-            qtypg: "Pages",
-            cover_authors: "Author",
-            name: "titleRU",
-            detail_text:"descriptionRU",
+            ldate_d:"year", #NEED CLEANING !!!!
+            qtypg: "pages",
+            cover_authors: "author",
+            name: "titleru",
+            detail_text:"descriptionru",
             Currency: "currency",
             source_picture: "image"
 
@@ -148,7 +151,7 @@ class ExmoParser
 
         started=true
         if @product
-          @product.Year = @product.Year.to_s[-1..-3] if @product.Year and @product.Year.to_s.length >= 4
+          @product.year = @product.year.to_s[-1..-3] if @product.year and @product.year.to_s.length >= 4
           @product.rise_price
           products_table << @product
         end

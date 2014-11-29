@@ -38,20 +38,20 @@ class OzonParser
   def read_ozon_parser path
 
     @binding=
-        {   name: "titleRU",
+        {   name: "titleru",
             price: "price",
             categoryId: "category_id",
             currencyId: "currency",
-            author: "Author",
+            author: "author",
             picture: "image",
-            publisher: "Publisher",
+            publisher: "publisher",
             language: "language",
-            page_extent: "Pages",
-            description:"descriptionRU",
+            page_extent: "pages",
+            description:"descriptionru",
             barcode: "barcode",
-            binding: "Binding",
+            binding: "binding",
             ISBN:"isbn",
-            year: "Year"
+            year: "year"
         }
 
      products_count= 0

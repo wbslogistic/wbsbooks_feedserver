@@ -81,12 +81,12 @@ class AzbukaParser
 
 
    @binding=   {
-        "PublisherName" =>  "Publisher",
-        "InitialPrintRun"  => "PrintRun",
-        "NumberOfPages"  => "Pages",
-        "NamesBeforeKey"  => "Author",
+        "PublisherName" =>  "publisher",
+        "InitialPrintRun"  => "printRun",
+        "NumberOfPages"  => "pages",
+        "NamesBeforeKey"  => "author",
         "OnHand" => "stock_level",
-        "PublicationDate"  => "Year",
+        "PublicationDate"  => "year",
        "SubjectCode" => "subject_code",
        "MeasureTypeCode"=> {"weight"  => Proc.new {  @reader.read_inner_xml.to_s.strip =="08"},
                             "thickness"  => Proc.new {  @reader.read_inner_xml.to_s.strip =="03"},
@@ -149,16 +149,16 @@ class AzbukaParser
             next
           when "TitleType"
             next if (@reader.read_inner_xml.to_s.strip !="01")
-            @product.titleRU= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.titleRU or @product.titleRU.empty?)
+            @product.titleru= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.titleru or @product.titleru.empty?)
           when "NamesBeforeKey"
-            @product.Author += @reader.read_inner_xml.to_s.strip
+            @product.author += @reader.read_inner_xml.to_s.strip
            when "KeyNames"
-             @product.Author =  @reader.read_inner_xml.to_s.strip + " " + @product.Author
+             @product.author =  @reader.read_inner_xml.to_s.strip + " " + @product.author
           #when "ProductAvailability"
            # @product.stock_level =  @reader.read_inner_xml.to_s.strip
           when "TextTypeCode"
             next if (@reader.read_inner_xml.to_s.strip !="01")
-            @product.descriptionRU= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.titleRU or @product.titleRU.empty?)
+            @product.descriptionru= @reader.expand.next.next.inner_xml if  @reader.expand.next.next &&   !@reader.expand.next.next.inner_xml.to_s.empty? && (!@product.titleru or @product.titleru.empty?)
 
           else
             next

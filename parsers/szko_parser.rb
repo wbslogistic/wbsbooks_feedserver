@@ -101,20 +101,20 @@ class SzkoParser
       index+=1
       product= Product.new
       product.site_id="new_4"
-      product.titleRU =  row[1].to_s
-      product.Author = row[2].to_s
+      product.titleru =  row[1].to_s
+      product.author = row[2].to_s
       product.price = row[4]
       product.rise_price
 
       product.stock_level =row[8].to_s.strip
       product.isbn =  row[10]
       product.barcode= row[10]
-      product.Publisher = row[13]
-      product.Year = row[14]
-      product.Binding = row[15]
+      product.publisher = row[13]
+      product.year = row[14]
+      product.binding = row[15]
       product.cover = row[16]
-      product.Pages =  row[17]
-      product.descriptionRU =  row[18]
+      product.pages =  row[17]
+      product.descriptionru =  row[18]
       products << product
 
      if (products.count()==100)
