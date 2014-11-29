@@ -63,6 +63,7 @@ GEM
     thread_safe (0.3.4)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    unicode (0.4.4.1)
     zip-zip (0.3)
       rubyzip (>= 1.0.0)
 
@@ -82,4 +83,5 @@ DEPENDENCIES
   rmagick
   rubyzip (>= 1.0.0)
   spreadsheet
+  unicode
   zip-zip

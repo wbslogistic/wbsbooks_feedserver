@@ -37,3 +37,5 @@ gem 'pg' #sudo apt-get install libpq-dev
 
 
 gem "logger"
+
+gem "unicode"
