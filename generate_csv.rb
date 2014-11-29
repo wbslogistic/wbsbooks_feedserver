@@ -3,7 +3,7 @@ require 'csv'
 
 
 def create_csv_template
-  columns= "name,description,slug,meta_description,meta_keywords,shipping_category_id,sku,price,Taxons,Available On,p_count,Images,product_properties,,".split(",")
+  columns= "name,description,slug,meta_description,meta_keywords,shipping_category_id,sku,price,Taxons,Available On,p_count,Images,product_properties,name_en,titile_en,description_en".split(",")
      Helper.delete_if_exists @@config["spree_csv_path"]
     CSV.open(@@config["spree_csv_path"] , "w",{:col_sep => ","}) do |csv|
       csv << columns
@@ -21,40 +21,48 @@ end
 
 #SKU	Name	Description	Available On	Price	CostPrice	product_properties	Taxons	OptionTypes	Variants	count_on_hand
 
-def  write_to_csv p , i
-  return if !p
+def  write_to_csv product_obj , i
+  return if !product_obj
 
-     stock_level = "2014-09-09" if  p.stock_level and p.stock_level > 0
+     stock_level = "2014-09-09" if  product_obj.stock_level and product_obj.stock_level > 0
 
 
-  image_url = File.exist?(p.imageurl) ?  "public/" + p.imageurl[2..-1] : nil
+  image_url = File.exist?(product_obj.imageurl) ?  "public/" + product_obj.imageurl[2..-1] : nil
+
+  #------------------- PROPERTIES ------------------------------------------
 
   product_properties = ""
-  product_properties += "Publisher:" + p.publisher.to_s.gsub("&quot;","''") + ";" if p.publisher
-  product_properties += "Publication Year:" + p.year.to_s.gsub("&quot;","''")+ ";"  if p.year
-  product_properties += "ISBN:" + p.isbn.to_s + ";" if p.isbn
+  product_properties += "Publisher:" + product_obj.publisher.to_s.gsub("&quot;","''") + ";" if product_obj.publisher # this property is not necessary
+  product_properties += "Publication Year:" + product_obj.year.to_s.gsub("&quot;","''")+ ";"  if product_obj.year
+  product_properties += "ISBN:" + product_obj.isbn.to_s + ";" if product_obj.isbn
 
-  product_properties += "Height:" + p.height.to_s  + ";" if p.height
-  product_properties += "Width:" + p.width.to_s + ";" if p.width
-  product_properties += "Weight:" + p.weight.to_s + ";" if p.weight
+  product_properties += "Height:" + product_obj.height.to_s  + ";" if product_obj.height
+  product_properties += "Width:" + product_obj.width.to_s + ";" if product_obj.width
+  product_properties += "Weight:" + product_obj.weight.to_s + ";" if product_obj.weight
 
-  product_properties += "Thickness:" + p.thickness.to_s + ";" if p.thickness
-  product_properties += "Format:" + p.binding.to_s  + ";" if p.binding
-  product_properties += "In stock:" + p.p.stock_level.to_s  + ";" if p.p.stock_level
-  product_properties += "Page count:" + p.p.pages.to_s  + ";" if p.p.pages
-
-
+  product_properties += "Thickness:" + product_obj.thickness.to_s + ";" if product_obj.thickness
+  product_properties += "Format:" + product_obj.binding.to_s  + ";" if product_obj.binding
+  product_properties += "In stock:" + product_obj.p.stock_level.to_s  + ";" if product_obj.p.stock_level
+  product_properties += "Page count:" + product_obj.p.pages.to_s  + ";" if product_obj.p.pages
   product_properties= product_properties.gsub(";","|")
 
 
+#-------------------TAXONS------------------------------------------
 
   taxons ="Categories>Business books|"
-  taxons += "Authors>" + p.author.r_quote +  "|" if p.author
-  taxons += "Publishers>" + p.publisher.r_quote if p.publisher
+  taxons += "Authors>" + product_obj.author.r_quote +  "|" if product_obj.author
+  taxons += "Publishers>" + product_obj.publisher.r_quote if product_obj.publisher
   taxons.strip
 
-    values =  [p.titleru.gsub("\n"," </br> "), p.descriptionru.gsub("\n"," </br> "),"slug_"+
-             (182+i).to_s,"meta description","meta keyword","default",p.isbn, p.price,taxons,"2014-01-01",33,image_url,product_properties]
+#-------------------TRANSLATION------------------------------------------
+
+  translation = Translation.find_by(:bookid =>  product_obj.id)
+
+  translation_title = (translation) ? translation.titleen  : ""
+  translation_description = (translation) ? translation.descriptionen  : ""
+
+  values =  [product_obj.titleru.gsub("\n"," </br> "), product_obj.descriptionru.gsub("\n"," </br> "),"slug_"+
+             (182+i).to_s,"meta description","meta keyword","default",product_obj.isbn, product_obj.price,taxons,"2014-01-01",33,image_url,product_properties,translation_title,translation_description]
 
              #stock_level,p.price,p.price,"","general","","", "default"]
 
@@ -73,7 +81,10 @@ create_csv_template
 products =  Product.where(:confirmed => 1)
 
 
+
 products.each_with_index do |p,i|
+
+
    write_to_csv p,i
 end
 
