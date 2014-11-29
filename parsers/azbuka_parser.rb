@@ -99,7 +99,7 @@ class AzbukaParser
      count = 0
       started = false
     while (@reader.read)
-
+      next if  @reader.node_type==15 or @reader.node_type=="#text" or @reader.name=="#text"
       begin
       line+=1
         next if  @reader.node_type==15
