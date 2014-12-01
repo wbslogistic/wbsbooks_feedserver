@@ -48,7 +48,7 @@ class AzbukaParser
 
   def create_azbuka_product
     @product =Product.new
-    @product.Author=""
+    @product.author=""
     @product.currency= "RUB"
     @product.site_id="new_1"
 

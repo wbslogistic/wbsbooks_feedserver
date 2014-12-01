@@ -83,7 +83,7 @@ class ExmoParser
 
           product.pages = book['qtypg'][content_txt]
           product.binding = book['formt']['name']
-          product.year = book['ldate_d'][content_txt]
+          product.year = book['ldate_d'][content_txt][-4..-1] if book['ldate_d'][content_txt]
           product.width = book['width'][content_txt]
           product.height = book['height'][content_txt]
          # product.stock_level = book['stock_level'][content_txt] stock level not found
@@ -151,7 +151,7 @@ class ExmoParser
 
         started=true
         if @product
-          @product.year = @product.year.to_s[-1..-3] if @product.year and @product.year.to_s.length >= 4
+          @product.year = @product.year.to_s[-4..-1] if @product.year and @product.year.to_s.length >= 4
           @product.rise_price
           products_table << @product
         end
