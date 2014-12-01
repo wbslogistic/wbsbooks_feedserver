@@ -88,6 +88,7 @@ class Product  < ActiveRecord::Base
   # commit;
 
 
+
   def self.aprove_new_comers
 
     begin
@@ -97,7 +98,21 @@ class Product  < ActiveRecord::Base
         FROM o_products  T2
         where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and  T1.site_id<>'new_4' and  T1.isbn is not NULL and  T1.isbn<> '';
   commit; ")
+
+
+
     Helper.log_and "Comers are approved "
+
+    Helper.log_and "Create taxons "
+
+    Product.connection.execute <<-SQL
+
+             update products
+             set taxon_en = get_taxon_en(category_id),taxon_ru = get_taxon(category_id)
+             where isbn is not null and isbn <> '' and  T1.site_id<>'new_4' and  position('new_' in  T1.site_id) > 0
+      SQL
+
+      Helper.log_and "Taxons created "
 
     end
       rescue Exception => ex
@@ -117,7 +132,23 @@ class Product  < ActiveRecord::Base
        T1.site_id='new_4' and  T1.isbn is not NULL and  T1.isbn<> '';  commit;")
 
     Helper.log_and "Comers from SZKO are approved! "
-  rescue Exception => ex
+
+
+
+    Helper.log_and "Create taxons "
+
+    Product.connection.execute <<-SQL
+
+             update products
+             set taxon_en = get_taxon_en(category_id) ,taxon_ru = get_taxon(category_id)
+             where site_id='new_4' and isbn is not null and isbn <> ''  and  position('new_' in  T1.site_id) > 0
+      SQL
+
+      Helper.log_and "Taxons created "
+
+
+
+    rescue Exception => ex
     Helper.log_and "problem with sql approving new commers #{ex.message }"
   end
 
