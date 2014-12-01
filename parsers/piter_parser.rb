@@ -19,7 +19,7 @@ class PiterParser
    {
    Price: "price",
    Title: "titleru",
-	 Author: "Author",
+	 Author: "author",
    Description:"descriptionru",
 	 Currency: "currency",
    ReleaseDate:"year",
@@ -31,7 +31,7 @@ class PiterParser
 	 Weight: "weight",
    Pages: "pages",
    Picture: "image",
-	 InitialPrintRun:"PrintRun",
+	 InitialPrintRun:"printrun",
    StockLevel:"stock_level",
    Height: "height"
    }
