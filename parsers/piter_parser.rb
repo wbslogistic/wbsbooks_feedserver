@@ -3,7 +3,7 @@ require_all 'helpers'
 
 
 class PiterParser
-
+  include Helper
   def parse
     puts "----- Start_parsing Piter ! -------"
     get_files_from_ftp

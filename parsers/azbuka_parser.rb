@@ -4,6 +4,7 @@
 
 
 class AzbukaParser
+  include Helper
 
   def parse
     Helper.log_and  "----- Start_Azbuka parser ! -------"
@@ -82,7 +83,7 @@ class AzbukaParser
 
    @binding=   {
         "PublisherName" =>  "publisher",
-        "InitialPrintRun"  => "printRun",
+        "InitialPrintRun"  => "printrun",
         "NumberOfPages"  => "pages",
         "NamesBeforeKey"  => "author",
         "OnHand" => "stock_level",

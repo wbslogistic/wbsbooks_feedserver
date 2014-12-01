@@ -1,5 +1,6 @@
 
 class SzkoParser
+  include Helper
 
   def parse
      Helper.log_and  ' ----- Start_parsing Szco ! -------'
