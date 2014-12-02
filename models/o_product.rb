@@ -13,6 +13,8 @@ class OProduct < ActiveRecord::Base
   end
 
 
+  attr_accessor :categories
+
 
 
 end

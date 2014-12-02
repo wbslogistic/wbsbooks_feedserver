@@ -59,9 +59,10 @@ class OzonParser
 
     t1 = DateTime.now
 
-    OProduct.delete_all
+  #OProduct.delete_all
 
     @product = OProduct.new
+    @product.categories =[]
 
     @reader = XML::Reader.file(path,:options => XML::Parser::Options::NOENT)
 
@@ -83,6 +84,7 @@ class OzonParser
 
 
 
+
         if (@reader.name=="offer")
 
           products_started= true
@@ -91,8 +93,14 @@ class OzonParser
 
           products_table << @product if @product and @product.product_have_more_2000
           @product=OProduct.new
+          @product.categories =[]
 
           next
+        end
+
+
+        if (@reader.name=="categoryId")
+          @product.categories  << @reader.read_inner_xml if @reader.read_inner_xml
         end
 
         next if  !products_started

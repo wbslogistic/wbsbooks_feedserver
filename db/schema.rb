@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141202154706) do
+ActiveRecord::Schema.define(version: 20141202215216) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 20141202154706) do
     t.integer "parent_id"
     t.integer "self_id"
     t.string  "name_en"
+    t.integer "priority"
   end
 
   create_table "o_products", force: true do |t|
@@ -109,6 +110,11 @@ ActiveRecord::Schema.define(version: 20141202154706) do
   end
 
   add_index "o_products", ["isbn"], name: "index_o_products_on_isbn", using: :btree
+
+  create_table "ozon_prod_caty_rel", force: true do |t|
+    t.integer "category_id"
+    t.integer "book_id"
+  end
 
   create_table "parsed_files", force: true do |t|
     t.integer "site_id"
@@ -160,6 +166,7 @@ ActiveRecord::Schema.define(version: 20141202154706) do
     t.integer "old_id"
     t.string  "taxon_en"
     t.string  "taxon_ru"
+    t.integer "author_id"
   end
 
   create_table "publisherlist", primary_key: "publisherid", force: true do |t|
