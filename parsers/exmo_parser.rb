@@ -8,7 +8,7 @@ class ExmoParser
   def parse
     Helper.log_and "----- Start_parsing Exmo ! -------"
     get_products
-    Product.aprove_new_comers
+
 
 
     Helper.log_and "----- parsing Exmo  done ! -------"
@@ -86,6 +86,9 @@ class ExmoParser
           product.year = book['ldate_d'][content_txt][-4..-1] if book['ldate_d'][content_txt]
           product.width = book['width'][content_txt]
           product.height = book['height'][content_txt]
+          product.stock_level = book['remainder'][content_txt]
+
+
          # product.stock_level = book['stock_level'][content_txt] stock level not found
 
 
