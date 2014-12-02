@@ -16,9 +16,13 @@ class Product  < ActiveRecord::Base
   end
 
 
+  def self.write_product_list_szko list
+
+    write_product_list list,nil, 4 , true,true,false,true
+  end
 
 
-  def self.write_product_list list,reader = nil, site_id =nil , delete=true,write_images=true,aprove_comers=true
+  def self.write_product_list list,reader = nil, site_id =nil , delete=true,write_images=true,aprove_comers=true,szko=false
 
 
     #deleting the existing ones
@@ -59,7 +63,9 @@ class Product  < ActiveRecord::Base
 
     end
 
-     Product.aprove_new_comers if aprove_comers
+     Product.aprove_new_comers if aprove_comers and !szko
+     Product.aprove_comers_from_szko  if szko
+
 
      #ImageDownloader.get_images(list) if list.count()>0 and write_images
     list.clear
@@ -94,10 +100,29 @@ class Product  < ActiveRecord::Base
   def self.aprove_new_comers
 
 
+
+
+    begin
+    Helper.log_and "Add categories"
+    ActiveRecord::Base.connection.execute("update products T1
+        set  category_id= T2.category_id
+        FROM o_products  T2
+        where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and  T1.site_id<>'new_4' and  T2.isbn is not NULL and  T2.isbn<> '';
+  commit; ")
+    Helper.log_and "Categories added"
+
+
+      rescue Exception => ex
+      Helper.log_and "problem with adding categories new commers #{ex.message }"
+    end
+
+
+
+
     begin
       Helper.log_and "Create taxons "
 
-      Product.connection.execute <<-SQL
+      ActiveRecord::Base.connection.execute <<-SQL
              update products
              set taxon_en = get_taxon_en(category_id),taxon_ru = get_taxon(category_id)
              where isbn is not null and isbn <> '' and  site_id<>'new_4'   and  position('new_' in  site_id) > 0
@@ -110,69 +135,45 @@ class Product  < ActiveRecord::Base
       Helper.log_and "Exception during taxon creation #{ex.message.to_s} "
     end
 
-    begin
-    Helper.log_and "Aprove new comers "
-    Product.connection.execute("update products T1
-        set  category_id= T2.category_id ,  site_id=replace( T1.site_id,'new_','')
-        FROM o_products  T2
-        where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and  T1.site_id<>'new_4' and  T1.isbn is not NULL and  T1.isbn<> '';
-  commit; ")
-
+    remove_new_flag
 
     Helper.log_and "Comers are approved "
 
-
-      rescue Exception => ex
-      Helper.log_and "problem with sql approve new commers #{ex.message }"
-    end
+  end
 
 
-    end
 
 
   def self.aprove_comers_from_szko
-
-
-    begin
-        Helper.log_and "Create taxons "
-
-        Product.connection.execute <<-SQL
-                 update products
-                 set taxon_en = get_taxon_en(category_id),taxon_ru = get_taxon(category_id)
-                 where isbn is not null and isbn <> '' and  site_id='new_4'
-        SQL
-
-        Helper.log_and "Taxons created "
-
-        rescue Exception=> ex
-
-          Helper.log_and "Exception during taxon creation #{ex.message.to_s} "
-    end
-
 
 
 
 
     begin
     Helper.log_and "Aprove new comers from szko "
-    Product.connection.execute("update products T1
-      set  category_id= T2.category_id , site_id=replace( T1.site_id,'new_',''),
+    ActiveRecord::Base.connection.execute <<-SQL
+      update products T1
+      set  category_id= T2.category_id ,
       author=T2.author, titleru=T2.titleru,   year=T2.year,image=T2.image, pages =T2.pages, descriptionru =T2.descriptionru
       FROM o_products  T2
-      where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and
-       T1.site_id='new_4' and  T1.isbn is not NULL and  T1.isbn<> '';  commit;")
+      where T1.isbn= T2.isbn  and T1.site_id='new_4' and  T2.isbn is not NULL and  T2.isbn<> '';
+      commit;
+
+      SQL
+
 
     Helper.log_and "Comers from SZKO are approved! "
 
 
+#------------------ TAXON CREATION -------------------
 
     Helper.log_and "Create taxons "
 
-    Product.connection.execute <<-SQL
-
+      ActiveRecord::Base.connection.execute <<-SQL
              update products
              set taxon_en = get_taxon_en(category_id) ,taxon_ru = get_taxon(category_id)
-             where site_id='new_4' and isbn is not null and isbn <> ''  and  position('new_' in  site_id) > 0
+             where site_id='new_4' and isbn is not null;
+            commit;
       SQL
 
       Helper.log_and "Taxons created "
@@ -181,10 +182,32 @@ class Product  < ActiveRecord::Base
 
     rescue Exception => ex
     Helper.log_and "problem with sql approving new commers #{ex.message }"
-  end
+    end
+
+#------------------ REMOVE NEW FLAG  -------------------
+
+    remove_new_flag
 
   end
 
+  def self.remove_new_flag
+    begin
+      Helper.log_and " Remove new flag!"
+
+      ActiveRecord::Base.connection.execute <<-SQL
+             update products
+             set site_id=replace(site_id,'new_','')
+             where  position('new_' in  site_id) > 0;
+              commit;
+      SQL
+
+      Helper.log_and "New flag removed ! "
+
+    rescue Exception=> ex
+
+      Helper.log_and "Exception during taxon creation #{ex.message.to_s} "
+    end
+  end
 
 
   def product_have_more_2000

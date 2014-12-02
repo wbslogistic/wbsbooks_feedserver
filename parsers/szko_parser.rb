@@ -119,7 +119,7 @@ class SzkoParser
       products << product
 
      if (products.count()==100)
-        Product.write_product_list products,nil,4
+        Product.write_product_list_szko products
         Helper.log_and " imported : " + index.to_s
 
        #index+=1
@@ -138,12 +138,8 @@ class SzkoParser
     else
       Helper.log_and " file already parsed: " +  path + time.to_s
     end
-
-
-    Product.write_product_list products,nil,4 if products.count() >0
-
-
-    end
+       Product.write_product_list_szko products if products.count() >0
+   end
 
 
   def unzip_file (file, destination)
