@@ -3,7 +3,7 @@ class AddFunctionToCreateEnglishTaxons < ActiveRecord::Migration
 
     sql = <<-SQL
 
-        CREATE FUNCTION get_taxon_en(child_id integer)
+              CREATE FUNCTION get_taxon_en(child_id integer)
         RETURNS text
         AS
         $$
@@ -17,10 +17,14 @@ class AddFunctionToCreateEnglishTaxons < ActiveRecord::Migration
         JOIN children b ON(a.self_id = b.parent_id )    ---|
         )
 
-        SELECT string_agg(name_en,'>') as taxon FROM children
+         select string_agg(name_en,'>') as name_en
+         from
+         (select name_en  FROM children ORDER BY depth DESC ) as tab1;
+
 
         $$
         LANGUAGE SQL IMMUTABLE STRICT;
+
 
 
 

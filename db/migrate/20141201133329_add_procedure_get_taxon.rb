@@ -4,7 +4,7 @@ class AddProcedureGetTaxon < ActiveRecord::Migration
 
    sql = <<-SQL
 
-        CREATE FUNCTION get_taxon(child_id integer)
+      CREATE FUNCTION get_taxon(child_id integer)
         RETURNS text
         AS
         $$
@@ -18,7 +18,10 @@ class AddProcedureGetTaxon < ActiveRecord::Migration
         JOIN children b ON(a.self_id = b.parent_id )    ---|
         )
 
-        SELECT string_agg(name,'>') as taxon FROM children
+         select string_agg(name,'>') as name
+         from
+         (select name  FROM children ORDER BY depth DESC ) as tab1;
+
 
         $$
         LANGUAGE SQL IMMUTABLE STRICT;
