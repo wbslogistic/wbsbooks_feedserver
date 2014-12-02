@@ -34,7 +34,7 @@ def generate
 end
 
 def create_csv_template
-  columns= "sku,name,description,slug,meta_description,meta_keywords,shipping_category_id,price,taxons_ru ,Taxons,Available On,p_count,Images,product_properties,translation,price_eu,price_ru".split(",")
+  columns= "sku,name,description,slug,meta_description,meta_keywords,shipping_category_id,price,taxons_ru,Taxons,Available On,stock,product_properties,translation,price_eu,price_ru,Images".split(",")
      Helper.delete_if_exists @@config["spree_csv_path"]
     CSV.open(@@config["spree_csv_path"] , "w",{:col_sep => ","}) do |csv|
       csv << columns
@@ -49,10 +49,11 @@ end
 def  write_to_csv product_obj , i
   return if !product_obj
 
-     stock_level = "2014-09-09" if  product_obj.stock_level and product_obj.stock_level > 0
+     stock_level = "2014-09-09" if  product_obj.stock_level and  product_obj.stock_level!='' and product_obj.stock_level.to_i > 0
 
+  image_url= ""
 
-  image_url = File.exist?(product_obj.imageurl) ?  "public/" + product_obj.imageurl[2..-1] : nil
+  image_url = File.exist?(product_obj.imageurl) ?  "public/" + product_obj.imageurl[2..-1] : nil if product_obj.imageurl
 
   #------------------- PROPERTIES ------------------------------------------
 
@@ -86,8 +87,8 @@ def  write_to_csv product_obj , i
    taxon_en = "Undefined|" if taxon_en == ""
 
 
-  taxon_en += "Authors>" + product_obj.author.r_quote +  "|" if product_obj.author
-  taxon_en += "Publishers>" + product_obj.publisher.r_quote if product_obj.publisher
+  taxon_en += "Authors>" + product_obj.author.r_quote +  "|" if product_obj.author and product_obj.author!=''
+  taxon_en += "Publishers>" + product_obj.publisher.r_quote if product_obj.publisher and  product_obj.publisher!=''
   taxon_en.strip
 
 
@@ -98,8 +99,8 @@ def  write_to_csv product_obj , i
 
   taxon_ru = "Undefined|" if taxon_ru == ""
 
-  taxon_ru += "Авторы>" + product_obj.author.r_quote +  "|" if product_obj.author
-  taxon_ru += "Издатели>" + product_obj.publisher.r_quote if product_obj.publisher
+  taxon_ru += "Авторы>" + product_obj.author.r_quote +  "|" if product_obj.author and product_obj.author!=''
+  taxon_ru += "Издатели>" + product_obj.publisher.r_quote if product_obj.publisher and product_obj.publisher!=''
   taxon_ru.strip
 
 
@@ -111,7 +112,8 @@ def  write_to_csv product_obj , i
   translation_description = (translation) ? translation.descriptionen  : ""
 
   translation_text = translation_title + ":"  + translation_description
-  translation_text = nil if translation_text==":"
+  translation_text = product_obj.titleru.to_s + "(will be translated) : "  + product_obj.descriptionru.to_s + "(will be translated )" if translation_text==":"
+
 
 
   site_id = "_site_" + product_obj.site_id.to_s[-1]
@@ -130,8 +132,8 @@ def  write_to_csv product_obj , i
 
 
 
-  values =  [ isbn ,product_obj.titleru.gsub("\n"," </br> "), product_obj.descriptionru.gsub("\n"," </br> "),slug,
-             translation_description,translation_title,"default", price_us,taxon_ru,taxon_en,"2014-01-01",product_obj.stock_level,image_url,product_properties,translation_text,price_euro,price_rub]
+  values =  [ isbn ,product_obj.titleru.to_s.gsub("\n"," </br> "), product_obj.descriptionru.to_s.gsub("\n"," </br> "),slug,
+             translation_description,translation_title,"default", price_us,taxon_ru,taxon_en,"2014-01-01",product_obj.stock_level,product_properties,translation_text,price_euro,price_rub,product_obj.image]  #image_url]
 
              #stock_level,p.price,p.price,"","general","","", "default"]
 
