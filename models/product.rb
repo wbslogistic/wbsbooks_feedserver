@@ -18,9 +18,7 @@ class Product  < ActiveRecord::Base
 
 
 
-
-
-  def self.write_product_list list,reader = nil, site_id =nil , delete=true,write_images=true
+  def self.write_product_list list,reader = nil, site_id =nil , delete=true,write_images=true,aprove_comers=true
 
 
     #deleting the existing ones
@@ -44,7 +42,7 @@ class Product  < ActiveRecord::Base
         end
       end
 
-      ImageDownloader.get_images(list) if write_images
+      #ImageDownloader.get_images(list) if write_images
       list.clear
 
     rescue Exception => ex
@@ -57,9 +55,13 @@ class Product  < ActiveRecord::Base
           reader.read if reader
         end
       end
+
+
     end
 
-     ImageDownloader.get_images(list) if list.count()>0 and write_images
+     Product.aprove_new_comers if aprove_comers
+
+     #ImageDownloader.get_images(list) if list.count()>0 and write_images
     list.clear
     end
 
@@ -91,6 +93,23 @@ class Product  < ActiveRecord::Base
 
   def self.aprove_new_comers
 
+
+    begin
+      Helper.log_and "Create taxons "
+
+      Product.connection.execute <<-SQL
+             update products
+             set taxon_en = get_taxon_en(category_id),taxon_ru = get_taxon(category_id)
+             where isbn is not null and isbn <> '' and  site_id<>'new_4'   and  position('new_' in  site_id) > 0
+      SQL
+
+      Helper.log_and "Taxons created "
+
+    rescue Exception=> ex
+
+      Helper.log_and "Exception during taxon creation #{ex.message.to_s} "
+    end
+
     begin
     Helper.log_and "Aprove new comers "
     Product.connection.execute("update products T1
@@ -100,27 +119,39 @@ class Product  < ActiveRecord::Base
   commit; ")
 
 
-
     Helper.log_and "Comers are approved "
 
-    Helper.log_and "Create taxons "
 
-    Product.connection.execute <<-SQL
-
-             update products
-             set taxon_en = get_taxon_en(category_id),taxon_ru = get_taxon(category_id)
-             where isbn is not null and isbn <> '' and  T1.site_id<>'new_4' and  position('new_' in  T1.site_id) > 0
-      SQL
-
-      Helper.log_and "Taxons created "
-
-    end
       rescue Exception => ex
       Helper.log_and "problem with sql approve new commers #{ex.message }"
     end
 
 
+    end
+
+
   def self.aprove_comers_from_szko
+
+
+    begin
+        Helper.log_and "Create taxons "
+
+        Product.connection.execute <<-SQL
+                 update products
+                 set taxon_en = get_taxon_en(category_id),taxon_ru = get_taxon(category_id)
+                 where isbn is not null and isbn <> '' and  site_id='new_4'
+        SQL
+
+        Helper.log_and "Taxons created "
+
+        rescue Exception=> ex
+
+          Helper.log_and "Exception during taxon creation #{ex.message.to_s} "
+    end
+
+
+
+
 
     begin
     Helper.log_and "Aprove new comers from szko "
@@ -141,7 +172,7 @@ class Product  < ActiveRecord::Base
 
              update products
              set taxon_en = get_taxon_en(category_id) ,taxon_ru = get_taxon(category_id)
-             where site_id='new_4' and isbn is not null and isbn <> ''  and  position('new_' in  T1.site_id) > 0
+             where site_id='new_4' and isbn is not null and isbn <> ''  and  position('new_' in  site_id) > 0
       SQL
 
       Helper.log_and "Taxons created "
