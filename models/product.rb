@@ -46,7 +46,7 @@ class Product  < ActiveRecord::Base
 
           pr.save(:validate => false)
 
-          if pr.categories
+          if pr.methods.include? "categories" and pr.categories
             pr.categories.each do |cat|
                    Product.connection.execute " INSERT INTO ozon_prod_caty_rel(category_id, book_id)  VALUES ( #{cat}, #{pr.id} ); "
             end
@@ -115,7 +115,7 @@ class Product  < ActiveRecord::Base
     begin
     Helper.log_and "Add categories"
     ActiveRecord::Base.connection.execute("update products T1
-        set  category_id= T2.category_id,T1.ozon_id = T2.id
+        set  category_id= T2.category_id,ozon_id = T2.id
         FROM o_products  T2
         where T2.isbn=  T1.isbn and  position('new_' in  T1.site_id) > 0 and  T1.site_id<>'new_4' and  T2.isbn is not NULL and  T2.isbn<> '';
   commit; ")
@@ -163,7 +163,7 @@ class Product  < ActiveRecord::Base
     Helper.log_and "Aprove new comers from szko "
     ActiveRecord::Base.connection.execute <<-SQL
       update products T1
-      set  category_id= T2.category_id ,T1.ozon_id = T2.id,
+      set  category_id= T2.category_id ,ozon_id = T2.id,
       author=T2.author, titleru=T2.titleru,   year=T2.year,image=T2.image, pages =T2.pages, descriptionru =T2.descriptionru
       FROM o_products  T2
       where T1.isbn= T2.isbn  and T1.site_id='new_4' and  T2.isbn is not NULL and  T2.isbn<> '';

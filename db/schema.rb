@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141202215216) do
+ActiveRecord::Schema.define(version: 20141203122128) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -116,6 +116,9 @@ ActiveRecord::Schema.define(version: 20141202215216) do
     t.integer "book_id"
   end
 
+  add_index "ozon_prod_caty_rel", ["book_id"], name: "index_ozon_prod_caty_rel_on_book_id", using: :btree
+  add_index "ozon_prod_caty_rel", ["category_id"], name: "index_ozon_prod_caty_rel_on_category_id", using: :btree
+
   create_table "parsed_files", force: true do |t|
     t.integer "site_id"
     t.string  "file_name"
@@ -164,8 +167,8 @@ ActiveRecord::Schema.define(version: 20141202215216) do
     t.string  "sessionid"
     t.integer "confirmed"
     t.integer "old_id"
-    t.string  "taxon_en"
-    t.string  "taxon_ru"
+    t.text    "taxon_en"
+    t.text    "taxon_ru"
     t.integer "author_id"
   end
 

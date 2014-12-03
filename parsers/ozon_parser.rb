@@ -78,6 +78,7 @@ class OzonParser
            category.name = @reader.read_inner_xml
            category.self_id = @reader.get_attribute("id")
            category.parent_id = @reader.get_attribute("parentId")
+           category.name_en = category.name.to_s + ("(should be translated)")
            list_categories << category
          next
         end
@@ -88,9 +89,7 @@ class OzonParser
         if (@reader.name=="offer")
 
           products_started= true
-
           Category.save_categories list_categories if list_categories.count > 0
-
           products_table << @product if @product and @product.product_have_more_2000
           @product=OProduct.new
           @product.categories =[]
