@@ -95,6 +95,9 @@ class AzbukaParser
                             "width" =>  Proc.new {  @reader.read_inner_xml.to_s.strip =="02"}}
     }
 
+
+     # <ProductForm>BC</ProductForm>
+		#<ProductFormDescription>в обл.</ProductFormDescription>
    #create_azbuka_product
      line=0
      count = 0
@@ -107,6 +110,13 @@ class AzbukaParser
        if (@reader.name=="Product")
          started =true
          array_of_products << @product if @product and @product.product_have_more_2000
+
+         if array_of_products.count()==500
+           count+=500
+           Product.write_product_list array_of_products,@reader,1
+           Helper.log_and "imported = " + count.to_s
+         end
+
          create_azbuka_product
          next
        end
@@ -166,11 +176,7 @@ class AzbukaParser
 
         end
 
-         if array_of_products.count()==500
-           count+=500
-           Product.write_product_list array_of_products,@reader,1
-           Helper.log_and "imported = " + count.to_s
-         end
+
         rescue Exception=>ex
           Helper.log_and " Exception parsing product Azbuka product index #{line} exception message: #{ex.message} trace: #{ex.backtrace} "
         end

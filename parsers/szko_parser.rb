@@ -104,13 +104,15 @@ class SzkoParser
       product.site_id="new_4"
       product.titleru =  row[1].to_s
       product.author = row[2].to_s
+      product.publisher = row[13].to_s.gsub("М.:".force_encoding("UTF-8"),"").gsub("М.:".force_encoding("UTF-8"),"").gsub("СПб.:".force_encoding("UTF-8"),"").strip
+
       product.price = row[4]
       product.rise_price
 
       product.stock_level =row[8].to_s.strip
       product.isbn =  row[10]
       product.barcode= row[10]
-      product.publisher = row[13]
+
       product.year = row[14]
       product.binding = row[15]
       product.cover = row[16]

@@ -6,7 +6,7 @@ class PiterParser
   include Helper
   def parse
     puts "----- Start_parsing Piter ! -------"
-    get_files_from_ftp
+  #  get_files_from_ftp
     get_products
     Product.aprove_new_comers
   end
@@ -73,6 +73,14 @@ class PiterParser
          @product.year = @product.year.to_s[0..3] if @product.year and @product.year.to_s.length >= 4
          @product.rise_price
          products_table << @product
+
+         if products_table.count()==100
+           count_products+=100
+
+           Product.write_product_list products_table,@reader,3
+           Helper.log_and " imported: " + count_products.to_s
+         end
+
        end
        @product=Product.new
        @product.site_id="new_3"
@@ -82,12 +90,7 @@ class PiterParser
      next if !started
        get_node if @binding[@reader.name.to_sym]
 
-      if products_table.count()==100
-        count_products+=100
 
-        Product.write_product_list products_table,@reader,3
-        Helper.log_and " imported: " + count_products.to_s
-       end
     rescue Exception => ex
      Helper.log_and "Exception file =#{path} message=" +   ex.message.to_s + "trace=" + ex.backtrace.to_s
       end
@@ -136,7 +139,9 @@ end
           parsed.file_name = f
           parsed.save
 
-        end     end     end
+        end
+        end
+      end
 
     rescue Exception => ex
       raise "problem during ftp session Piter site #{ex.message} trace = #{ex.backtrace}"
