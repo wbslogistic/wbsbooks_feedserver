@@ -60,7 +60,7 @@ def  write_to_csv product_obj , i
   product_properties = ""
   product_properties += "Publisher:" + product_obj.publisher.to_s.gsub("&quot;","''") + ";" if product_obj.publisher # this property is not necessary
   product_properties += "publication_year:" + product_obj.year.to_s.gsub("&quot;","''")+ ";"  if product_obj.year
-  #product_properties += "ISBN:" + product_obj.isbn.to_s + ";" if product_obj.isbn
+  product_properties += "ISBN:" + product_obj.isbn.to_s + ";" if product_obj.isbn
 
   product_properties += "HEIGHT:" + product_obj.height.to_s  + ";" if product_obj.height
   product_properties += "WIDTH:" + product_obj.width.to_s + ";" if product_obj.width
@@ -71,6 +71,8 @@ def  write_to_csv product_obj , i
   product_properties += "in_stock:" + product_obj.stock_level.to_s  + ";" if product_obj.stock_level
   product_properties += "Pages:" + product_obj.pages.to_s  + ";" if product_obj.pages
 
+
+  product_obj.publisher=  product_obj.publisher.to_s.gsub("М.:".force_encoding("UTF-8"),"").gsub("М.:".force_encoding("UTF-8"),"").strip
   product_properties= product_properties.gsub(";","|")
 
 
@@ -86,7 +88,6 @@ def  write_to_csv product_obj , i
 
    taxon_en = "Undefined|" if taxon_en == ""
 
-
   taxon_en += "Authors>" + product_obj.author.r_quote +  "|" if product_obj.author and product_obj.author!=''
   taxon_en += "Publishers>" + product_obj.publisher.r_quote if product_obj.publisher and  product_obj.publisher!=''
   taxon_en.strip
@@ -94,8 +95,9 @@ def  write_to_csv product_obj , i
 
   taxon_ru = ""
   taxon_ru=  product_obj.taxon_ru.split("|").map do |tax|
-    "Категорий>" + tax + "|"
+    "Categories>" + tax + "|"
   end.join if  product_obj.taxon_ru
+
 
   taxon_ru = "Undefined|" if taxon_ru == ""
 
@@ -112,7 +114,13 @@ def  write_to_csv product_obj , i
   translation_description = (translation) ? translation.descriptionen  : ""
 
   translation_text = translation_title + ":"  + translation_description
-  translation_text = product_obj.titleru.to_s + "(will be translated) : "  + product_obj.descriptionru.to_s + "(will be translated )" if translation_text==":"
+
+  translation_text = product_obj.titleru.to_s + ":"  + product_obj.descriptionru.to_s + "" if translation_text==":"
+
+
+
+  # translation should be taken from different place
+
 
 
 
