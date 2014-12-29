@@ -68,7 +68,7 @@ class SzkoParser
 
      get_products_from_xls(szko_xls)
 
-     Product.aprove_comers_from_szko
+     Product.approve_comers_from_szko
 
      puts ' ---- Szco finished ! ----'
   end

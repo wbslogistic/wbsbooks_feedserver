@@ -22,7 +22,18 @@ class Category < ActiveRecord::Base
     Helper.log_and " #{list.count} Categories imported from OZON !!! "
     list.clear
     list=nil
+
+    Helper.log_and " #Generate taxons !!! "
+
+    Category.connection.execute <<-SQL
+                                              UPDATE categories
+                                               SET taxon_en=get_taxon_en(self_id), taxon_ru=get_taxon(self_id);
+                                    SQL
+
+    Helper.log_and "Taxons generated !!! "
+
   end
+
 end
 
 

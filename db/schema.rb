@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141203122128) do
+ActiveRecord::Schema.define(version: 20141229131414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -79,6 +79,8 @@ ActiveRecord::Schema.define(version: 20141203122128) do
     t.integer "self_id"
     t.string  "name_en"
     t.integer "priority"
+    t.text    "taxon_en"
+    t.text    "taxon_ru"
   end
 
   create_table "o_products", force: true do |t|
@@ -170,6 +172,7 @@ ActiveRecord::Schema.define(version: 20141203122128) do
     t.text    "taxon_en"
     t.text    "taxon_ru"
     t.integer "author_id"
+    t.integer "ozon_object_id"
   end
 
   create_table "publisherlist", primary_key: "publisherid", force: true do |t|

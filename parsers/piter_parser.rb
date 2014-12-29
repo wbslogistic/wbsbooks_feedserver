@@ -8,7 +8,7 @@ class PiterParser
     puts "----- Start_parsing Piter ! -------"
   #  get_files_from_ftp
     get_products
-    Product.aprove_new_comers
+    Product.approve_new_comers
   end
 
 

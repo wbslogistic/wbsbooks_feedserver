@@ -78,7 +78,7 @@ class OzonParser
            category.name = @reader.read_inner_xml
            category.self_id = @reader.get_attribute("id")
            category.parent_id = @reader.get_attribute("parentId")
-           category.name_en = category.name.to_s + ("(should be translated)")
+           category.name_en = category.name.to_s
            list_categories << category
          next
         end
