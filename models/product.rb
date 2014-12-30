@@ -1,5 +1,5 @@
 
-require 'active_record'
+
 
 class Product  < ActiveRecord::Base
 
@@ -22,8 +22,13 @@ class Product  < ActiveRecord::Base
   end
 
 
-  def self.write_product_list list,reader = nil, site_id =nil , delete=true,write_images=true,aprove_comers=true,szko=false
+  def self.write_product_list(list,reader = nil, site_id =nil , delete=true,write_images=true,aprove_comers=true,szko=false)
 
+    list = list.select do |product |
+      product.isbn and produs.isbn!=''
+    end
+
+    return if list.count ==0
 
     #deleting the existing ones
      Product.where(isbn: list.map{|p| p.isbn }.compact ,site_id: site_id.to_s).delete_all if delete
@@ -69,8 +74,6 @@ class Product  < ActiveRecord::Base
           reader.read if reader
         end
       end
-
-
     end
 
      Product.approve_new_comers if aprove_comers and !szko
@@ -108,8 +111,6 @@ class Product  < ActiveRecord::Base
 
 
   def self.approve_new_comers
-
-
 
     begin
     Helper.log_and "Add categories"
@@ -161,7 +162,8 @@ class Product  < ActiveRecord::Base
 
     remove_new_flag
 
-  end
+    end
+    end
 
   def self.remove_new_flag
     begin
@@ -200,6 +202,7 @@ class Product  < ActiveRecord::Base
   #piter  -3
   #szko  - 4
 
-end
+  end
+
 
 

@@ -11,7 +11,7 @@ class AzbukaParser
     getFileFtp
     Helper.log_and "---- Azbuka start parsing xml -------- "
     parse_with_libxml(@@config["azbuka_xml"])
-    Product.aprove_new_comers
+    Product.approve_new_comers
   end
 
   def getFileFtp

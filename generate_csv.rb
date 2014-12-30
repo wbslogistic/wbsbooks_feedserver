@@ -2,11 +2,13 @@ require './add_things'
 require 'csv'
 
 
-
-
 class String
   def r_quote()
     replace (self.gsub("&quot;"," "))
+  end
+
+  def remove_publisher_prefix
+    replace (self.gsub("&quot;","''").gsub("М.:".force_encoding("UTF-8"),"").gsub("М.:".force_encoding("UTF-8"),"").strip)
   end
 end
 
@@ -16,21 +18,15 @@ class CsvGenerator
 
 
 def generate
-
  @dollar,@euro=  get_exchange_rate
  @dollar=@dollar.to_d
  @euro= @euro.to_d
 
-
   create_csv_template
-
 
   Product.where(:confirmed => 1).each_with_index do |p,i|
     write_to_csv p,i if p.isbn and p.isbn != ""
   end
-
-
-
 end
 
 def create_csv_template
@@ -58,7 +54,7 @@ def  write_to_csv product_obj , i
   #------------------- PROPERTIES ------------------------------------------
 
   product_properties = ""
-  product_properties += "Publisher:" + product_obj.publisher.to_s.gsub("&quot;","''") + ";" if product_obj.publisher # this property is not necessary
+  product_properties += "Publisher:" + product_obj.publisher.to_s.remove_publisher_prefix   + ";"
   product_properties += "publication_year:" + product_obj.year.to_s.gsub("&quot;","''")+ ";"  if product_obj.year
   product_properties += "ISBN:" + product_obj.isbn.to_s + ";" if product_obj.isbn
 
@@ -72,7 +68,8 @@ def  write_to_csv product_obj , i
   product_properties += "Pages:" + product_obj.pages.to_s  + ";" if product_obj.pages
 
 
-  product_obj.publisher=  product_obj.publisher.to_s.gsub("М.:".force_encoding("UTF-8"),"").gsub("М.:".force_encoding("UTF-8"),"").strip
+
+  product_obj.publisher=  product_obj.publisher.to_s.remove_publisher_prefix
   product_properties= product_properties.gsub(";","|")
 
 
@@ -80,29 +77,70 @@ def  write_to_csv product_obj , i
 
   #taxons ="Categories>Business books|"
 
+
+  categories_rel=[]
+  if !product_obj.ozon_id.blank?
+        categories_rel = ActiveRecord::Base.connection.execute <<-SQL
+      select *
+      from ozon_prod_caty_rel
+      where book_id = '#{product_obj.ozon_id}'
+    SQL
+
+  end
+
+
+
+
+categories = categories_rel.map do  |rel|;  Category.find_by(:self_id =>  rel['category_id']) ; end
+
+
   taxon_en = ""
-  taxon_en += product_obj.taxon_en.split("|").map do |tax|
-    "Categories>" + tax + "|"
-  end.join if  product_obj.taxon_en
+  taxon_ru = ""
+   categories.each do |category|
+     taxon_en += "Categories>" + category.taxon_en + "|"
+     taxon_ru += "Categories>" + category.taxon_ru + "|"
+  end.join
 
 
    taxon_en = "Undefined|" if taxon_en == ""
+   taxon_ru = "Undefined|" if taxon_ru == ""
 
-  taxon_en += "Authors>" + product_obj.author.r_quote +  "|" if product_obj.author and product_obj.author!=''
+
+#-------------------- AUTHORS -------------------------------------
+
+
+  author =  !product_obj.author_id.blank?  ?  Author.where(:authorid => product_obj.author_id).first : nil
+
+
+  author_ru_name = author  ?   author.authorru : product_obj.author
+  author_en_name = author  ?   author.authoren : product_obj.author
+
+  taxon_en += "Authors>" + author_en_name +  "|" if !author_en_name.blank?
+  taxon_ru += "Авторы>" + author_ru_name +  "|" if !author_ru_name.blank?
+
+
+  #
+  # publishers_id=[]
+  # if !product_obj.ozon_id.blank?
+  #   publishers_id = ActiveRecord::Base.connection.execute <<-SQL
+  #      SELECT bookid, publisherid
+  #      FROM bookpublishers;
+  #      WHERE book_id = '#{product_obj.ozon_id}'
+  #   SQL
+  # end
+
+
+
+  #categories = categories_rel.map do  |rel|;  Category.find_by(:self_id =>  rel['category_id']) ; end
+  #publishers_id.each do |pub|
+  #  end
+
   taxon_en += "Publishers>" + product_obj.publisher.r_quote if product_obj.publisher and  product_obj.publisher!=''
-  taxon_en.strip
-
-
-  taxon_ru = ""
-  taxon_ru=  product_obj.taxon_ru.split("|").map do |tax|
-    "Categories>" + tax + "|"
-  end.join if  product_obj.taxon_ru
-
-
-  taxon_ru = "Undefined|" if taxon_ru == ""
-
-  taxon_ru += "Авторы>" + product_obj.author.r_quote +  "|" if product_obj.author and product_obj.author!=''
   taxon_ru += "Издатели>" + product_obj.publisher.r_quote if product_obj.publisher and product_obj.publisher!=''
+
+
+
+  taxon_en.strip
   taxon_ru.strip
 
 
@@ -113,10 +151,17 @@ def  write_to_csv product_obj , i
   translation_title = (translation) ? translation.titleen  : ""
   translation_description = (translation) ? translation.descriptionen  : ""
 
-  translation_text = translation_title + ":"  + translation_description
 
-  translation_text = product_obj.titleru.to_s + ":"  + product_obj.descriptionru.to_s + "" if translation_text==":"
+  translation_title= product_obj.titleru if translation_description==""
+  translation_description =  product_obj.descriptionru if translation_description==""
 
+
+
+  translation_text = translation_title + "-:-"  + translation_description
+
+  translation_text = product_obj.titleru.to_s + "-:-"  + product_obj.descriptionru.to_s + "" if translation_text==":"
+
+  translation_text += "-:-" + product_obj.titleru.to_s  +  "-:-" + product_obj.descriptionru.to_s
 
 
   # translation should be taken from different place
@@ -156,12 +201,16 @@ end
 
 
 
-def get_exchange_rate
+  def get_exchange_rate
+    return       56,70
+  end
+
+
+def get_exchange_rate_old
 
 
   dollar = nil
   euro =nil
-
 
   n_times "Problem with getting exchange rate " do
 
@@ -180,10 +229,9 @@ def get_exchange_rate
                    end
           end
 
-end
-  return dollar.gsub(",","."),euro.gsub(",",".")
+  end
 
-
+  return     56,70     #dollar.gsub(",","."),euro.gsub(",",".")
  end
 
 

@@ -1,6 +1,6 @@
 
 require 'RMagick'
-
+require 'active_record'
 require 'rubygems'
 require 'require_all'
 
