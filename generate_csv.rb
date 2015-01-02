@@ -119,24 +119,25 @@ categories = categories_rel.map do  |rel|;  Category.find_by(:self_id =>  rel['c
   taxon_ru += "Авторы>" + author_ru_name +  "|" if !author_ru_name.blank?
 
 
-  #
-  # publishers_id=[]
-  # if !product_obj.ozon_id.blank?
-  #   publishers_id = ActiveRecord::Base.connection.execute <<-SQL
-  #      SELECT bookid, publisherid
-  #      FROM bookpublishers;
-  #      WHERE book_id = '#{product_obj.ozon_id}'
-  #   SQL
-  # end
+#-------------------- PUBLISHERS -------------------------------------
 
+   publishers_ids=[]
+     publishers_ids = ActiveRecord::Base.connection.execute    <<-SQL
+        SELECT bookid, publisherid
+        FROM bookpublishers
+        WHERE bookid = '#{product_obj.id}'
+     SQL
 
+ if publishers_ids.count > 0
+   begin
+    publisher =    Publisher.find(publishers_ids[0]['publisherid'])
+    taxon_en += "Publishers>" + publisher.publishernameen.to_s.r_quote if !publisher.publishernameen.blank?
+    taxon_ru += "Издатели>" + publisher.publishernameru.to_s.r_quote if !publisher.publishernameru.blank?
+   rescue Exception => ex
+     puts "Exception on getting publisher #{ex.message} backtrace #{ex.backtrace.to_s}  "
+   end
 
-  #categories = categories_rel.map do  |rel|;  Category.find_by(:self_id =>  rel['category_id']) ; end
-  #publishers_id.each do |pub|
-  #  end
-
-  taxon_en += "Publishers>" + product_obj.publisher.r_quote if product_obj.publisher and  product_obj.publisher!=''
-  taxon_ru += "Издатели>" + product_obj.publisher.r_quote if product_obj.publisher and product_obj.publisher!=''
+ end
 
 
 

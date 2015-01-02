@@ -24,11 +24,11 @@ class Product  < ActiveRecord::Base
 
   def self.write_product_list(list,reader = nil, site_id =nil , delete=true,write_images=true,aprove_comers=true,szko=false)
 
-    list = list.select do |product |
-      product.isbn and produs.isbn!=''
+    list_to_check = list.select do |product |
+      product.isbn and product.isbn!=''
     end
 
-    return if list.count ==0
+    return if list_to_check.count ==0
 
     #deleting the existing ones
      Product.where(isbn: list.map{|p| p.isbn }.compact ,site_id: site_id.to_s).delete_all if delete
@@ -36,7 +36,7 @@ class Product  < ActiveRecord::Base
     begin
       #transaction
       Product.transaction do
-        list.each do |pr|
+        list_to_check.each do |pr|
 
 
           if pr.image and pr.isbn and pr.image.length > 0
@@ -51,10 +51,13 @@ class Product  < ActiveRecord::Base
 
           pr.save(:validate => false)
 
-          if pr.methods.include? "categories" and pr.categories
-            pr.categories.each do |cat|
+
+          if pr.categories
+          puts "INSERTING CATEGORIES count= #{pr.categories} "
+             pr.categories.each do |cat|
                    Product.connection.execute " INSERT INTO ozon_prod_caty_rel(category_id, book_id)  VALUES ( #{cat}, #{pr.id} ); "
-            end
+             end
+          puts "CATEGORIES INSERTED  "
           end
 
 
