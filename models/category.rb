@@ -2,7 +2,7 @@ class Category < ActiveRecord::Base
 
 
   def self.save_categories list
-    Category.destroy_all
+    #Category.destroy_all
     #deleting the existing ones
 
     begin

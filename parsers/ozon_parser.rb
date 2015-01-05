@@ -78,8 +78,17 @@ class OzonParser
            category.name = @reader.read_inner_xml
            category.self_id = @reader.get_attribute("id")
            category.parent_id = @reader.get_attribute("parentId")
-           category.name_en = category.name.to_s
-           list_categories << category
+            existing =  Category.find_by(self_id: category.self_id)
+           if existing
+             if (existing.name.to_s.strip != category.name.to_s.strip)
+                  existing.name_en = ''
+                  existing.name = category.name.to_s.strip
+                  existing.save
+             end
+           else
+             list_categories << category
+           end
+
          next
         end
 
